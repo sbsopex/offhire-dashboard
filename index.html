@@ -16,41 +16,22 @@
   }
   body { font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Arial,sans-serif; background:var(--bg); color:var(--text); font-size:13px; line-height:1.5; }
 
-  /* ── LOCK SCREEN ── */
-  #lockScreen {
-    position:fixed; inset:0; background:#1b3a5c;
-    display:flex; align-items:center; justify-content:center;
-    z-index:9999;
-  }
-  .lock-box {
-    background:#fff; border-radius:var(--radius); padding:36px 40px;
-    width:100%; max-width:380px; text-align:center;
-    box-shadow:0 8px 40px rgba(0,0,0,0.25);
-  }
-  .lock-logo { font-size:10px; color:#7fb8e0; letter-spacing:2px; text-transform:uppercase; margin-bottom:6px; }
+  /* LOCK */
+  #lockScreen { position:fixed; inset:0; background:#1b3a5c; display:flex; align-items:center; justify-content:center; z-index:9999; }
+  .lock-box { background:#fff; border-radius:var(--radius); padding:36px 40px; width:100%; max-width:380px; text-align:center; }
+  .lock-logo { font-size:9px; color:#7fb8e0; letter-spacing:2px; text-transform:uppercase; margin-bottom:6px; }
   .lock-title { font-size:20px; font-weight:700; color:var(--navy); margin-bottom:4px; }
   .lock-sub { font-size:12px; color:var(--text2); margin-bottom:24px; }
-  .lock-input {
-    width:100%; padding:11px 14px; font-size:14px; font-family:inherit;
-    border:1.5px solid var(--border); border-radius:var(--radius-sm);
-    text-align:center; letter-spacing:3px; margin-bottom:12px;
-    transition:border-color 0.2s;
-  }
+  .lock-input { width:100%; padding:11px 14px; font-size:14px; font-family:inherit; border:1.5px solid var(--border); border-radius:var(--radius-sm); text-align:center; letter-spacing:3px; margin-bottom:12px; transition:border-color 0.2s; }
   .lock-input:focus { outline:none; border-color:var(--navy); }
   .lock-input.shake { animation:shake 0.4s; border-color:var(--red); }
-  .lock-btn {
-    width:100%; padding:11px; font-size:14px; font-weight:600; font-family:inherit;
-    background:var(--navy); color:#fff; border:none; border-radius:var(--radius-sm);
-    cursor:pointer; transition:background 0.15s;
-  }
+  .lock-btn { width:100%; padding:11px; font-size:14px; font-weight:600; font-family:inherit; background:var(--navy); color:#fff; border:none; border-radius:var(--radius-sm); cursor:pointer; }
   .lock-btn:hover { background:var(--navy-light); }
   .lock-err { font-size:12px; color:var(--red); margin-top:8px; min-height:18px; }
   .lock-hint { font-size:11px; color:var(--text3); margin-top:16px; }
-  @keyframes shake {
-    0%,100%{transform:translateX(0)} 20%{transform:translateX(-8px)} 40%{transform:translateX(8px)} 60%{transform:translateX(-6px)} 80%{transform:translateX(6px)}
-  }
+  @keyframes shake { 0%,100%{transform:translateX(0)} 20%{transform:translateX(-8px)} 40%{transform:translateX(8px)} 60%{transform:translateX(-6px)} 80%{transform:translateX(6px)} }
 
-  /* ── PAGE ── */
+  /* PAGE */
   .page { max-width:1200px; margin:0 auto; padding:20px 16px 40px; }
 
   /* HEADER */
@@ -70,8 +51,8 @@
   .status-pill.ok      { color:var(--green);  border-color:#c0dd97; background:#f4faea; }
   .status-pill.loading { color:var(--amber);  border-color:#fac775; background:#fffbf0; }
   .status-pill.error   { color:var(--red);    border-color:#f7c1c1; background:#fff0f0; }
-  .bar-actions { display:flex; gap:8px; align-items:center; flex-wrap:wrap; }
-  .icon-btn { display:flex; align-items:center; gap:5px; font-size:11px; font-family:inherit; background:var(--surface); border:1px solid var(--border); border-radius:100px; padding:5px 13px; cursor:pointer; transition:background 0.15s; color:var(--text2); white-space:nowrap; }
+  .bar-actions { display:flex; gap:8px; flex-wrap:wrap; }
+  .icon-btn { display:flex; align-items:center; gap:5px; font-size:11px; font-family:inherit; background:var(--surface); border:1px solid var(--border); border-radius:100px; padding:5px 13px; cursor:pointer; color:var(--text2); white-space:nowrap; transition:all 0.15s; }
   .icon-btn:hover { background:var(--surface2); border-color:var(--navy); color:var(--navy); }
   .icon-btn i { font-size:14px; }
   .icon-btn.export-xl  { color:#217346; border-color:#b7dcca; }
@@ -90,7 +71,6 @@
   .kpi-critical::after { background:var(--orange); }
   .kpi-warning::after  { background:var(--amber); }
   .kpi-monitor::after  { background:var(--green); }
-  .kpi-all::after      { background:var(--navy); }
   .kpi-num { font-size:32px; font-weight:700; line-height:1; }
   .kpi-lbl { font-size:9px; letter-spacing:1.5px; color:var(--text3); margin-top:5px; text-transform:uppercase; }
   .kpi-sub { font-size:11px; color:var(--text3); margin-top:4px; }
@@ -98,6 +78,7 @@
 
   /* LAYOUT */
   .row2 { display:grid; grid-template-columns:1fr 1fr; gap:14px; margin-bottom:14px; }
+  .row3 { display:grid; grid-template-columns:1fr 1fr 1fr; gap:14px; margin-bottom:14px; }
   .full { margin-bottom:14px; }
   .card { background:var(--surface); border:1px solid var(--border); border-radius:var(--radius); padding:16px 18px; }
   .card-title { font-size:10px; font-weight:600; letter-spacing:1.2px; color:var(--text2); text-transform:uppercase; margin-bottom:14px; display:flex; align-items:center; gap:6px; }
@@ -131,6 +112,14 @@
   .health-bar-wrap { height:8px; background:var(--bg); border-radius:4px; overflow:hidden; margin-top:10px; }
   .health-bar { height:100%; border-radius:4px; transition:width 0.9s ease; }
 
+  /* CHART WRAPPERS */
+  .chart-wrap { position:relative; width:100%; }
+
+  /* CUSTOM LEGEND */
+  .chart-legend { display:flex; flex-wrap:wrap; gap:10px; margin-bottom:12px; font-size:11px; color:var(--text2); }
+  .legend-item { display:flex; align-items:center; gap:5px; }
+  .legend-dot { width:10px; height:10px; border-radius:2px; flex-shrink:0; }
+
   /* TABLES */
   .tbl-wrap { overflow-x:auto; }
   table { width:100%; border-collapse:collapse; font-size:12px; }
@@ -142,7 +131,7 @@
   tbody tr:hover td { background:var(--surface2); }
   .tbl-empty { text-align:center !important; color:var(--text3) !important; font-style:italic; padding:20px !important; font-weight:400 !important; }
 
-  /* BADGE */
+  /* BADGES */
   .badge { display:inline-block; padding:2px 9px; border-radius:100px; font-size:10px; font-weight:600; }
   .badge-good     { background:#eaf3de; color:#2d5e0a; }
   .badge-warning  { background:#faeeda; color:#7a4500; }
@@ -153,19 +142,30 @@
   .rb-warning  { background:#fffbec; color:#6b4800; }
   .rb-monitor  { background:#eaf3de; color:#2d5e0a; }
 
-  /* DETAIL TABLE CONTROLS */
+  /* DATE FILTER BAR */
+  .date-filter-bar { background:var(--surface); border:1px solid var(--border); border-radius:var(--radius); padding:14px 18px; margin-bottom:14px; }
+  .date-filter-title { font-size:10px; font-weight:600; letter-spacing:1.2px; color:var(--text2); text-transform:uppercase; margin-bottom:10px; display:flex; align-items:center; gap:6px; }
+  .date-filter-title i { font-size:15px; color:var(--navy); }
+  .date-filter-row { display:flex; align-items:center; gap:8px; flex-wrap:wrap; }
+  .dfbtn { font-size:12px; font-family:inherit; padding:5px 14px; border-radius:100px; border:1px solid var(--border); background:var(--surface2); color:var(--text2); cursor:pointer; transition:all 0.15s; white-space:nowrap; }
+  .dfbtn:hover { border-color:var(--navy); color:var(--navy); }
+  .dfbtn.active { background:var(--navy); color:#fff; border-color:var(--navy); }
+  .date-sep { font-size:11px; color:var(--text3); padding:0 4px; }
+  .date-input { font-family:inherit; font-size:12px; padding:5px 10px; border:1px solid var(--border); border-radius:var(--radius-sm); background:var(--surface); color:var(--text); cursor:pointer; }
+  .date-input:focus { outline:none; border-color:var(--navy); }
+  .date-apply { font-family:inherit; font-size:12px; padding:5px 14px; border-radius:100px; border:1px solid var(--navy); background:var(--navy); color:#fff; cursor:pointer; }
+  .date-apply:hover { background:var(--navy-light); }
+  .date-badge { font-size:11px; color:var(--text3); margin-left:4px; font-style:italic; }
+
+  /* DETAIL CONTROLS */
   .detail-controls { display:flex; align-items:center; gap:8px; margin-bottom:12px; flex-wrap:wrap; }
-  .detail-controls input[type=text] {
-    flex:1; min-width:160px; padding:6px 12px; font-size:12px; font-family:inherit;
-    border:1px solid var(--border); border-radius:100px;
-    background:var(--surface2); color:var(--text);
-  }
+  .detail-controls input[type=text] { flex:1; min-width:160px; padding:6px 12px; font-size:12px; font-family:inherit; border:1px solid var(--border); border-radius:100px; background:var(--surface2); color:var(--text); }
   .detail-controls input[type=text]:focus { outline:none; border-color:var(--navy); background:#fff; }
   .detail-count { font-size:11px; color:var(--text3); white-space:nowrap; }
   .risk-filter-btns { display:flex; gap:5px; flex-wrap:wrap; }
   .rfbtn { font-size:11px; font-family:inherit; padding:4px 11px; border-radius:100px; border:1px solid var(--border); background:var(--surface); color:var(--text2); cursor:pointer; transition:all 0.15s; }
   .rfbtn:hover { border-color:var(--navy); color:var(--navy); }
-  .rfbtn.active { background:var(--navy); color:#fff; border-color:var(--navy); }
+  .rfbtn.active          { background:var(--navy);   border-color:var(--navy);   color:#fff; }
   .rfbtn.rf-overdue.active  { background:var(--red);    border-color:var(--red);    color:#fff; }
   .rfbtn.rf-critical.active { background:var(--orange); border-color:var(--orange); color:#fff; }
   .rfbtn.rf-warning.active  { background:var(--amber);  border-color:var(--amber);  color:#fff; }
@@ -176,7 +176,7 @@
 
   @media(max-width:700px){
     .kpi-strip{grid-template-columns:repeat(2,1fr);}
-    .row2{grid-template-columns:1fr;}
+    .row2,.row3{grid-template-columns:1fr;}
     .header{flex-direction:column;align-items:flex-start;gap:12px;}
     .header-right{width:100%;justify-content:space-between;}
   }
@@ -184,21 +184,20 @@
 </head>
 <body>
 
-<!-- ══ LOCK SCREEN ══ -->
+<!-- LOCK SCREEN -->
 <div id="lockScreen">
   <div class="lock-box">
     <div class="lock-logo">Seacon Bintang Sejahtera</div>
     <div class="lock-title">🔒 Offhire Dashboard</div>
     <div class="lock-sub">Enter the team password to continue</div>
-    <input class="lock-input" type="password" id="pwInput" placeholder="Password"
-      onkeydown="if(event.key==='Enter') checkPassword()">
+    <input class="lock-input" type="password" id="pwInput" placeholder="Password">
     <button class="lock-btn" onclick="checkPassword()">Unlock</button>
     <div class="lock-err" id="lockErr"></div>
     <div class="lock-hint">Contact your SBS Operations team for access.</div>
   </div>
 </div>
 
-<!-- ══ DASHBOARD ══ -->
+<!-- DASHBOARD -->
 <div class="page" id="dashContent" style="display:none;">
 
   <div class="header">
@@ -233,7 +232,27 @@
     </div>
   </div>
 
-  <!-- KPI STRIP — clickable to filter detail table -->
+  <!-- DATE FILTER -->
+  <div class="date-filter-bar">
+    <div class="date-filter-title"><i class="ti ti-calendar-search"></i> Filter by offhire request date</div>
+    <div class="date-filter-row">
+      <button class="dfbtn active" id="dfAll"       onclick="setDateFilter('all')">All dates</button>
+      <button class="dfbtn"        id="dfToday"     onclick="setDateFilter('today')">Today</button>
+      <button class="dfbtn"        id="dfThisWeek"  onclick="setDateFilter('thisweek')">This week</button>
+      <button class="dfbtn"        id="dfLastWeek"  onclick="setDateFilter('lastweek')">Last week</button>
+      <button class="dfbtn"        id="dfThisMonth" onclick="setDateFilter('thismonth')">This month</button>
+      <div style="display:flex;align-items:center;gap:6px;margin-left:8px;">
+        <span class="date-sep">Custom:</span>
+        <input type="date" class="date-input" id="dateFrom">
+        <span class="date-sep">→</span>
+        <input type="date" class="date-input" id="dateTo">
+        <button class="date-apply" onclick="applyCustomDate()">Apply</button>
+      </div>
+      <span class="date-badge" id="dateBadge"></span>
+    </div>
+  </div>
+
+  <!-- KPI STRIP -->
   <div class="kpi-strip">
     <div class="kpi-card kpi-overdue" onclick="setDetailFilter('overdue')" id="kpiOverdue">
       <div class="kpi-num col-overdue" id="kOverdue">—</div>
@@ -260,9 +279,7 @@
   <!-- INSIGHTS -->
   <div class="card full">
     <div class="card-title"><i class="ti ti-bolt"></i> Operational insights</div>
-    <div id="insightsBody">
-      <div class="insight insight-neutral"><i class="ti ti-loader-2"></i> Loading live data...</div>
-    </div>
+    <div id="insightsBody"><div class="insight insight-neutral"><i class="ti ti-loader-2"></i> Loading live data...</div></div>
   </div>
 
   <!-- STATUS + HEALTH -->
@@ -272,7 +289,7 @@
       <div class="stat-row"><span class="stat-lbl">Dalam Proses</span><span class="stat-val" id="sDalamProses">—</span></div>
       <div class="stat-row"><span class="stat-lbl">Sudah Keluar</span><span class="stat-val col-green" id="sSudahKeluar">—</span></div>
       <div class="stat-row"><span class="stat-lbl">Total containers</span><span class="stat-val" id="sTotal">—</span></div>
-      <div class="stat-row" style="margin-top:8px; border-top:2px solid var(--border); padding-top:10px;">
+      <div class="stat-row" style="margin-top:8px;border-top:2px solid var(--border);padding-top:10px;">
         <span class="stat-lbl">Location found</span><span class="stat-val col-green" id="sLocFound">—</span>
       </div>
       <div class="stat-row"><span class="stat-lbl">Location missing</span><span class="stat-val col-red" id="sLocMissing">—</span></div>
@@ -302,7 +319,49 @@
     </div>
   </div>
 
-  <!-- SHIPPING LINE -->
+  <!-- CHARTS ROW 1: Risk donut + Completion by line -->
+  <div class="row2">
+    <div class="card">
+      <div class="card-title"><i class="ti ti-chart-donut-3"></i> Risk category breakdown</div>
+      <div class="chart-legend" id="riskLegend"></div>
+      <div class="chart-wrap" style="height:220px;">
+        <canvas id="chartRisk" role="img" aria-label="Donut chart showing risk category breakdown of active containers"></canvas>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-title"><i class="ti ti-chart-bar"></i> Completion by shipping line</div>
+      <div class="chart-legend" id="lineLegend"></div>
+      <div class="chart-wrap" style="height:220px;">
+        <canvas id="chartLine" role="img" aria-label="Bar chart showing completion rate by shipping line"></canvas>
+      </div>
+    </div>
+  </div>
+
+  <!-- CHARTS ROW 2: Depot stacked bar + Container type -->
+  <div class="row2">
+    <div class="card">
+      <div class="card-title"><i class="ti ti-building-warehouse"></i> Depot activity</div>
+      <div class="chart-legend">
+        <span class="legend-item"><span class="legend-dot" style="background:#378ADD;"></span>Dalam Proses</span>
+        <span class="legend-item"><span class="legend-dot" style="background:#3B6D11;"></span>Sudah Keluar</span>
+      </div>
+      <div class="chart-wrap" id="depotChartWrap" style="height:260px;">
+        <canvas id="chartDepot" role="img" aria-label="Stacked bar chart of container counts per depot"></canvas>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-title"><i class="ti ti-box"></i> Container type distribution (active)</div>
+      <div class="chart-legend">
+        <span class="legend-item"><span class="legend-dot" style="background:#3B6D11;"></span>Location found</span>
+        <span class="legend-item"><span class="legend-dot" style="background:#E24B4A;"></span>Location missing</span>
+      </div>
+      <div class="chart-wrap" id="ctypeChartWrap" style="height:260px;">
+        <canvas id="chartCtype" role="img" aria-label="Horizontal bar chart showing container types with location status"></canvas>
+      </div>
+    </div>
+  </div>
+
+  <!-- SHIPPING LINE TABLE (kept as reference data) -->
   <div class="card full">
     <div class="card-title"><i class="ti ti-ship"></i> Shipping line summary</div>
     <div class="tbl-wrap">
@@ -316,40 +375,18 @@
     </div>
   </div>
 
-  <!-- RISK + CTYPE -->
-  <div class="row2">
-    <div class="card">
-      <div class="card-title"><i class="ti ti-map-pin"></i> Risk by location status</div>
-      <div class="tbl-wrap">
-        <table>
-          <thead><tr><th>Category</th><th>Found</th><th>Missing</th></tr></thead>
-          <tbody id="riskLocBody"><tr><td colspan="3" class="tbl-empty">Loading...</td></tr></tbody>
-        </table>
-      </div>
-    </div>
-    <div class="card">
-      <div class="card-title"><i class="ti ti-box"></i> Container type (active only)</div>
-      <div class="tbl-wrap">
-        <table>
-          <thead><tr><th>Type</th><th>Total</th><th>Found</th><th>Missing</th></tr></thead>
-          <tbody id="ctypeBody"><tr><td colspan="4" class="tbl-empty">Loading...</td></tr></tbody>
-        </table>
-      </div>
-    </div>
-  </div>
-
-  <!-- DEPOT -->
+  <!-- RISK LOCATION TABLE -->
   <div class="card full">
-    <div class="card-title"><i class="ti ti-building-warehouse"></i> Redelivery depot summary</div>
+    <div class="card-title"><i class="ti ti-map-pin"></i> Risk by location status</div>
     <div class="tbl-wrap">
       <table>
-        <thead><tr><th>Depot name</th><th>Total</th><th>Dalam Proses</th><th>Sudah Keluar</th></tr></thead>
-        <tbody id="depotBody"><tr><td colspan="4" class="tbl-empty">Loading...</td></tr></tbody>
+        <thead><tr><th>Category</th><th>Total</th><th>Location Found</th><th>Location Missing</th></tr></thead>
+        <tbody id="riskLocBody"><tr><td colspan="4" class="tbl-empty">Loading...</td></tr></tbody>
       </table>
     </div>
   </div>
 
-  <!-- ══ CONTAINER DETAIL TABLE ══ -->
+  <!-- CONTAINER DETAIL TABLE -->
   <div class="card full">
     <div class="card-title-row">
       <div class="card-title" style="margin-bottom:0;"><i class="ti ti-table"></i> Container detail</div>
@@ -358,36 +395,25 @@
         <button class="icon-btn export-csv" onclick="exportDetailCSV()"><i class="ti ti-file-text"></i> CSV</button>
       </div>
     </div>
-
     <div class="detail-controls">
       <div class="risk-filter-btns">
-        <button class="rfbtn active"         id="rfAll"      onclick="setDetailFilter('all')">All active</button>
-        <button class="rfbtn rf-overdue"     id="rfOverdue"  onclick="setDetailFilter('overdue')">Overdue</button>
-        <button class="rfbtn rf-critical"    id="rfCritical" onclick="setDetailFilter('critical')">Critical</button>
-        <button class="rfbtn rf-warning"     id="rfWarning"  onclick="setDetailFilter('warning')">Warning</button>
-        <button class="rfbtn rf-monitor"     id="rfMonitor"  onclick="setDetailFilter('monitor')">Monitor</button>
+        <button class="rfbtn active"      id="rfAll"      onclick="setDetailFilter('all')">All active</button>
+        <button class="rfbtn rf-overdue"  id="rfOverdue"  onclick="setDetailFilter('overdue')">Overdue</button>
+        <button class="rfbtn rf-critical" id="rfCritical" onclick="setDetailFilter('critical')">Critical</button>
+        <button class="rfbtn rf-warning"  id="rfWarning"  onclick="setDetailFilter('warning')">Warning</button>
+        <button class="rfbtn rf-monitor"  id="rfMonitor"  onclick="setDetailFilter('monitor')">Monitor</button>
       </div>
       <input type="text" id="detailSearch" placeholder="Search container no, depot, location..." oninput="renderDetailTable()">
       <span class="detail-count" id="detailCount"></span>
     </div>
-
     <div class="tbl-wrap">
       <table>
-        <thead>
-          <tr>
-            <th style="text-align:left;">Container No</th>
-            <th>Line</th>
-            <th>Type</th>
-            <th>Depot</th>
-            <th>Days Left</th>
-            <th>Risk</th>
-            <th>Location</th>
-            <th>Req Date</th>
-          </tr>
-        </thead>
-        <tbody id="detailBody">
-          <tr><td colspan="8" class="tbl-empty">Loading...</td></tr>
-        </tbody>
+        <thead><tr>
+          <th style="text-align:left;">Container No</th>
+          <th>Line</th><th>Type</th><th>Depot</th>
+          <th>Req Date</th><th>Days Left</th><th>Risk</th><th>Location</th>
+        </tr></thead>
+        <tbody id="detailBody"><tr><td colspan="8" class="tbl-empty">Loading...</td></tr></tbody>
       </table>
     </div>
   </div>
@@ -399,216 +425,385 @@
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
 <script>
-// ─────────────────────────────────────────────────────
-// PASSWORD  — change 'SBS2024' to your preferred password
-// ─────────────────────────────────────────────────────
-const TEAM_PASSWORD = 'SBSOH2026!';
+// ── PASSWORD ──────────────────────────────────────────
+const TEAM_PASSWORD = 'SBS2024';
 const SESSION_KEY   = 'sbs_offhire_auth';
 
 function checkPassword() {
   const val = document.getElementById('pwInput').value;
   if (val === TEAM_PASSWORD) {
-    sessionStorage.setItem(SESSION_KEY, '1');
-    document.getElementById('lockScreen').style.display = 'none';
-    document.getElementById('dashContent').style.display = 'block';
+    sessionStorage.setItem(SESSION_KEY,'1');
+    document.getElementById('lockScreen').style.display='none';
+    document.getElementById('dashContent').style.display='block';
     fetchAllData();
   } else {
     const inp = document.getElementById('pwInput');
-    inp.classList.remove('shake');
-    void inp.offsetWidth;
-    inp.classList.add('shake');
-    document.getElementById('lockErr').textContent = 'Incorrect password. Try again.';
-    inp.value = '';
+    inp.classList.remove('shake'); void inp.offsetWidth; inp.classList.add('shake');
+    document.getElementById('lockErr').textContent='Incorrect password. Try again.';
+    inp.value='';
   }
 }
-
-// Check if already unlocked this session
-if (sessionStorage.getItem(SESSION_KEY) === '1') {
-  document.getElementById('lockScreen').style.display = 'none';
-  document.getElementById('dashContent').style.display = 'block';
+if (sessionStorage.getItem(SESSION_KEY)==='1') {
+  document.getElementById('lockScreen').style.display='none';
+  document.getElementById('dashContent').style.display='block';
 }
+document.getElementById('pwInput').addEventListener('keydown', e => { if(e.key==='Enter') checkPassword(); });
 
-document.getElementById('pwInput').addEventListener('keydown', e => {
-  if (e.key === 'Enter') checkPassword();
-});
-
-// ─────────────────────────────────────────────────────
-// CONFIG
-// ─────────────────────────────────────────────────────
-const SHEET_ID = '1VgyCWMtSnNknlL4SgE9Q5DvGj7cR7IBQNnUkL3kZCQU';
-const SHEETS   = { MSL: 'Offhire MSL', GSL: 'Offhire GSL' };
+// ── CONFIG ────────────────────────────────────────────
+const SHEET_ID   = '1VgyCWMtSnNknlL4SgE9Q5DvGj7cR7IBQNnUkL3kZCQU';
+const SHEETS     = { MSL:'Offhire MSL', GSL:'Offhire GSL' };
 const REFRESH_MS = 5 * 60 * 1000;
 
-const state = { MSL:[], GSL:[], filter:'ALL', detailFilter:'all', lastFetch:null };
+// ── STATE ─────────────────────────────────────────────
+const state = {
+  MSL:[], GSL:[],
+  filter:'ALL',
+  detailFilter:'all',
+  dateMode:'all',
+  dateFrom:null, dateTo:null
+};
 const MONTHS = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
 
 function fmtNow() {
-  const d = new Date();
+  const d=new Date();
   return d.getDate()+' '+MONTHS[d.getMonth()]+' '+d.getFullYear()+
     ' \u00b7 '+String(d.getHours()).padStart(2,'0')+':'+String(d.getMinutes()).padStart(2,'0');
 }
 
-// ─────────────────────────────────────────────────────
-// FETCH
-// ─────────────────────────────────────────────────────
-function gvizUrl(sheetName) {
-  return 'https://docs.google.com/spreadsheets/d/'+SHEET_ID+
-    '/gviz/tq?tqx=out:json&sheet='+encodeURIComponent(sheetName);
+// ── DATE PARSING ──────────────────────────────────────
+// Sheet format: M/D/YYYY  e.g. 6/4/2026
+function parseReqDate(val) {
+  if (!val) return null;
+  const s = String(val).trim();
+  // M/D/YYYY
+  const m1 = s.match(/^(\d{1,2})\/(\d{1,2})\/(\d{4})$/);
+  if (m1) return new Date(parseInt(m1[3]), parseInt(m1[1])-1, parseInt(m1[2]));
+  // YYYY-MM-DD
+  const m2 = s.match(/^(\d{4})-(\d{2})-(\d{2})$/);
+  if (m2) return new Date(parseInt(m2[1]), parseInt(m2[2])-1, parseInt(m2[3]));
+  // Fallback
+  const d = new Date(s);
+  return isNaN(d.getTime()) ? null : d;
+}
+
+function startOf(unit, d) {
+  const r = new Date(d);
+  if (unit==='day')  { r.setHours(0,0,0,0); return r; }
+  if (unit==='week') { const day=r.getDay(); r.setDate(r.getDate()-day); r.setHours(0,0,0,0); return r; }
+  if (unit==='month'){ r.setDate(1); r.setHours(0,0,0,0); return r; }
+  return r;
+}
+function endOf(unit, d) {
+  const r = new Date(d);
+  if (unit==='day')  { r.setHours(23,59,59,999); return r; }
+  if (unit==='week') { const day=r.getDay(); r.setDate(r.getDate()+(6-day)); r.setHours(23,59,59,999); return r; }
+  if (unit==='month'){ r.setMonth(r.getMonth()+1,0); r.setHours(23,59,59,999); return r; }
+  return r;
+}
+
+function getDateRange() {
+  const now = new Date();
+  if (state.dateMode==='all')       return null;
+  if (state.dateMode==='today')     return { from:startOf('day',now),   to:endOf('day',now) };
+  if (state.dateMode==='thisweek')  return { from:startOf('week',now),  to:endOf('week',now) };
+  if (state.dateMode==='lastweek')  { const lw=new Date(now); lw.setDate(lw.getDate()-7); return { from:startOf('week',lw), to:endOf('week',lw) }; }
+  if (state.dateMode==='thismonth') return { from:startOf('month',now), to:endOf('month',now) };
+  if (state.dateMode==='custom')    return { from:state.dateFrom, to:state.dateTo };
+  return null;
+}
+
+function rowInDateRange(row, range) {
+  if (!range) return true;
+  const d = parseReqDate(row[11]);
+  if (!d) return true; // no date = include
+  if (range.from && d < range.from) return false;
+  if (range.to   && d > range.to)   return false;
+  return true;
+}
+
+// ── DATE FILTER UI ────────────────────────────────────
+function setDateFilter(mode) {
+  state.dateMode = mode;
+  ['dfAll','dfToday','dfThisWeek','dfLastWeek','dfThisMonth'].forEach(id => {
+    const el=document.getElementById(id);
+    if(el) el.classList.remove('active');
+  });
+  const map={all:'dfAll',today:'dfToday',thisweek:'dfThisWeek',lastweek:'dfLastWeek',thismonth:'dfThisMonth'};
+  if(map[mode]) document.getElementById(map[mode]).classList.add('active');
+  updateDateBadge();
+  render();
+}
+function applyCustomDate() {
+  const f = document.getElementById('dateFrom').value;
+  const t = document.getElementById('dateTo').value;
+  if (!f && !t) { setDateFilter('all'); return; }
+  state.dateMode = 'custom';
+  state.dateFrom = f ? new Date(f+'T00:00:00') : null;
+  state.dateTo   = t ? new Date(t+'T23:59:59') : null;
+  ['dfAll','dfToday','dfThisWeek','dfLastWeek','dfThisMonth'].forEach(id => {
+    const el=document.getElementById(id); if(el) el.classList.remove('active');
+  });
+  updateDateBadge();
+  render();
+}
+function updateDateBadge() {
+  const badge = document.getElementById('dateBadge');
+  const range = getDateRange();
+  if (!range) { badge.textContent='Showing all dates'; return; }
+  const fmt = d => d ? d.getDate()+' '+MONTHS[d.getMonth()]+' '+d.getFullYear() : '—';
+  if (range.from && range.to) badge.textContent = fmt(range.from)+' → '+fmt(range.to);
+  else if (range.from) badge.textContent = 'From '+fmt(range.from);
+  else badge.textContent = 'Up to '+fmt(range.to);
+}
+
+// ── FETCH ─────────────────────────────────────────────
+function gvizUrl(name) {
+  return 'https://docs.google.com/spreadsheets/d/'+SHEET_ID+'/gviz/tq?tqx=out:json&sheet='+encodeURIComponent(name);
 }
 function parseGviz(raw) {
-  const json = JSON.parse(raw.replace(/^[^{]*/, '').replace(/\);?\s*$/, ''));
-  return json.table.rows.map(r =>
-    r.c.map(cell => {
-      if (!cell || cell.v === null || cell.v === undefined) return null;
-      if (typeof cell.v === 'string' && cell.v.startsWith('Date(')) return cell.f || cell.v;
-      return cell.v;
-    })
-  );
+  const json = JSON.parse(raw.replace(/^[^{]*/,'').replace(/\);?\s*$/,''));
+  return json.table.rows.map(r => r.c.map(cell => {
+    if (!cell || cell.v===null || cell.v===undefined) return null;
+    if (typeof cell.v==='string' && cell.v.startsWith('Date(')) return cell.f || cell.v;
+    return cell.v;
+  }));
 }
 async function fetchSheet(name) {
   const res = await fetch(gvizUrl(name));
-  if (!res.ok) throw new Error('HTTP '+res.status+' for '+name);
+  if (!res.ok) throw new Error('HTTP '+res.status);
   return parseGviz(await res.text());
 }
 function setStatus(type, msg) {
-  const pill = document.getElementById('statusPill');
-  document.getElementById('statusIcon').className =
-    type==='loading' ? 'ti ti-loader-2' : type==='ok' ? 'ti ti-circle-check' : 'ti ti-alert-circle';
-  pill.className = 'status-pill '+type;
+  document.getElementById('statusIcon').className = type==='loading'?'ti ti-loader-2':type==='ok'?'ti ti-circle-check':'ti ti-alert-circle';
+  document.getElementById('statusPill').className = 'status-pill '+type;
   document.getElementById('statusText').textContent = msg;
 }
 async function fetchAllData() {
   setStatus('loading','Refreshing data from Google Sheet...');
   try {
-    const [msl, gsl] = await Promise.all([fetchSheet(SHEETS.MSL), fetchSheet(SHEETS.GSL)]);
-    state.MSL = msl.slice(1).filter(r => r[2]);
-    state.GSL = gsl.slice(1).filter(r => r[2]);
-    state.lastFetch = new Date();
+    const [msl,gsl] = await Promise.all([fetchSheet(SHEETS.MSL), fetchSheet(SHEETS.GSL)]);
+    state.MSL = msl.slice(1).filter(r=>r[2]);
+    state.GSL = gsl.slice(1).filter(r=>r[2]);
     setStatus('ok','Live \u00b7 Last synced '+fmtNow());
     document.getElementById('footerTime').textContent = fmtNow();
+    updateDateBadge();
     render();
   } catch(e) {
-    setStatus('error','Could not load sheet — make sure it is published to web. '+e.message);
+    setStatus('error','Could not load — make sure sheet is published to web. '+e.message);
   }
 }
+function applyFilter() { state.filter=document.getElementById('lineFilter').value; render(); }
 
-function applyFilter() { state.filter = document.getElementById('lineFilter').value; render(); }
-
-// ─────────────────────────────────────────────────────
-// RISK HELPER
-// ─────────────────────────────────────────────────────
+// ── HELPERS ───────────────────────────────────────────
 function getRisk(daysLeft) {
-  if (daysLeft < 0)   return 'overdue';
-  if (daysLeft <= 3)  return 'critical';
-  if (daysLeft <= 5)  return 'warning';
-  if (daysLeft <= 7)  return 'monitor';
+  if (daysLeft<0)   return 'overdue';
+  if (daysLeft<=3)  return 'critical';
+  if (daysLeft<=5)  return 'warning';
+  if (daysLeft<=7)  return 'monitor';
   return null;
 }
+function getLines() { return state.filter==='ALL' ? ['MSL','GSL'] : [state.filter]; }
 
-// ─────────────────────────────────────────────────────
-// COMPUTE STATS
-// ─────────────────────────────────────────────────────
+// ── COMPUTE STATS ─────────────────────────────────────
 function computeStats() {
-  const lines = state.filter==='ALL' ? ['MSL','GSL'] : [state.filter];
+  const lines=getLines(), range=getDateRange();
   let overdue=0,critical=0,warning=0,monitor=0;
   let dalamProses=0,sudahKeluar=0,locFound=0,locMissing=0;
   let blindSpot=0,todayCount=0,tomorrowCount=0;
-  const riskLoc = {overdue:{f:0,m:0},critical:{f:0,m:0},warning:{f:0,m:0},monitor:{f:0,m:0}};
+  const riskLoc={overdue:{f:0,m:0},critical:{f:0,m:0},warning:{f:0,m:0},monitor:{f:0,m:0}};
   const slSummary={}, depotMap={}, ctypeMap={};
 
   for (const ln of lines) {
     slSummary[ln]={total:0,dalamProses:0,sudahKeluar:0,overdue:0,critical:0,warning:0,monitor:0};
     for (const row of (state[ln]||[])) {
       if (!String(row[2]||'').trim()) continue;
-      const daysLeft = Number(row[13]);
-      const status   = String(row[14]||'').trim();
-      const location = String(row[15]||'').trim();
-      const depot    = String(row[9] ||'').trim();
-      const ctype    = String(row[18]||'').trim();
-      const isFound  = location && location !== 'Missing location';
-
+      if (!rowInDateRange(row,range)) continue;
+      const daysLeft=Number(row[13]), status=String(row[14]||'').trim();
+      const location=String(row[15]||'').trim(), depot=String(row[9]||'').trim(), ctype=String(row[18]||'').trim();
+      const isFound = location && location!=='Missing location';
       slSummary[ln].total++;
       if (isFound) locFound++; else locMissing++;
-
       if (depot) {
         if (!depotMap[depot]) depotMap[depot]={total:0,dalamProses:0,sudahKeluar:0};
-        if (status==='Sudah keluar') depotMap[depot].sudahKeluar++;
-        else depotMap[depot].dalamProses++;
-        depotMap[depot].total = depotMap[depot].dalamProses + depotMap[depot].sudahKeluar;
+        if (status==='Sudah keluar') depotMap[depot].sudahKeluar++; else depotMap[depot].dalamProses++;
+        depotMap[depot].total=depotMap[depot].dalamProses+depotMap[depot].sudahKeluar;
       }
       if (status==='Sudah keluar') { sudahKeluar++; slSummary[ln].sudahKeluar++; }
       else                         { dalamProses++; slSummary[ln].dalamProses++; }
-
       if (ctype && status!=='Sudah keluar') {
         if (!ctypeMap[ctype]) ctypeMap[ctype]={total:0,f:0,m:0};
         ctypeMap[ctype].total++;
         if (!isFound) ctypeMap[ctype].m++; else ctypeMap[ctype].f++;
       }
       if (status!=='Sudah keluar') {
-        if      (daysLeft<0)    { overdue++;  slSummary[ln].overdue++;  if(isFound) riskLoc.overdue.f++;  else{riskLoc.overdue.m++;  blindSpot++;} }
-        else if (daysLeft<=3)   { critical++; slSummary[ln].critical++; if(isFound) riskLoc.critical.f++; else{riskLoc.critical.m++; blindSpot++;} if(daysLeft===0) todayCount++; if(daysLeft===1) tomorrowCount++; }
-        else if (daysLeft<=5)   { warning++;  slSummary[ln].warning++;  if(isFound) riskLoc.warning.f++;  else riskLoc.warning.m++;  }
-        else if (daysLeft<=7)   { monitor++;  slSummary[ln].monitor++;  if(isFound) riskLoc.monitor.f++;  else riskLoc.monitor.m++;  }
+        if      (daysLeft<0)  { overdue++;  slSummary[ln].overdue++;  if(isFound) riskLoc.overdue.f++;  else{riskLoc.overdue.m++;  blindSpot++;} }
+        else if (daysLeft<=3) { critical++; slSummary[ln].critical++; if(isFound) riskLoc.critical.f++; else{riskLoc.critical.m++; blindSpot++;} if(daysLeft===0)todayCount++; if(daysLeft===1)tomorrowCount++; }
+        else if (daysLeft<=5) { warning++;  slSummary[ln].warning++;  if(isFound) riskLoc.warning.f++;  else riskLoc.warning.m++;  }
+        else if (daysLeft<=7) { monitor++;  slSummary[ln].monitor++;  if(isFound) riskLoc.monitor.f++;  else riskLoc.monitor.m++;  }
       }
     }
   }
-  const total    = dalamProses+sudahKeluar;
-  const compRate = total>0 ? ((sudahKeluar/total)*100).toFixed(1) : '0.0';
+  const total=dalamProses+sudahKeluar;
+  const compRate=total>0?((sudahKeluar/total)*100).toFixed(1):'0.0';
   let health=100;
   if (total>0) {
-    health -= Math.round((overdue/total)*40);
-    health -= Math.round((critical/total)*20);
-    health -= Math.round((blindSpot/total)*20);
-    health -= Math.round((locMissing/total)*20);
+    health-=Math.round((overdue/total)*40); health-=Math.round((critical/total)*20);
+    health-=Math.round((blindSpot/total)*20); health-=Math.round((locMissing/total)*20);
   }
-  health = Math.max(0,Math.min(100,health));
+  health=Math.max(0,Math.min(100,health));
   return {overdue,critical,warning,monitor,dalamProses,sudahKeluar,total,compRate,
-          locFound,locMissing,blindSpot,todayCount,tomorrowCount,
-          riskLoc,slSummary,depotMap,ctypeMap,health};
+          locFound,locMissing,blindSpot,todayCount,tomorrowCount,riskLoc,slSummary,depotMap,ctypeMap,health};
 }
 
-// ─────────────────────────────────────────────────────
-// DETAIL TABLE
-// ─────────────────────────────────────────────────────
+// ── CHARTS ────────────────────────────────────────────
+const charts = {};
+
+function destroyChart(id) { if (charts[id]) { charts[id].destroy(); delete charts[id]; } }
+
+function renderCharts(s) {
+  // 1. Risk donut
+  destroyChart('risk');
+  const riskData = [s.overdue, s.critical, s.warning, s.monitor];
+  const riskTotal = riskData.reduce((a,b)=>a+b,0);
+  document.getElementById('riskLegend').innerHTML = [
+    {label:'Overdue', color:'#E24B4A', val:s.overdue},
+    {label:'Critical',color:'#854F0B', val:s.critical},
+    {label:'Warning', color:'#BA7517', val:s.warning},
+    {label:'Monitor', color:'#639922', val:s.monitor},
+  ].map(x=>`<span class="legend-item"><span class="legend-dot" style="background:${x.color};"></span>${x.label}: <strong>${x.val}</strong></span>`).join('');
+
+  if (riskTotal > 0) {
+    charts.risk = new Chart(document.getElementById('chartRisk'), {
+      type:'doughnut',
+      data:{ labels:['Overdue','Critical','Warning','Monitor'], datasets:[{
+        data: riskData,
+        backgroundColor:['#E24B4A','#854F0B','#BA7517','#639922'],
+        borderWidth:2, borderColor:'#ffffff', hoverOffset:6
+      }]},
+      options:{ responsive:true, maintainAspectRatio:false,
+        plugins:{ legend:{display:false},
+          tooltip:{ callbacks:{ label: ctx => ' '+ctx.label+': '+ctx.raw+' ('+Math.round(ctx.raw/riskTotal*100)+'%)' }}
+        },
+        cutout:'65%'
+      }
+    });
+  } else {
+    const ctx = document.getElementById('chartRisk').getContext('2d');
+    ctx.clearRect(0,0,400,400);
+    ctx.fillStyle='#8a99aa'; ctx.font='13px sans-serif'; ctx.textAlign='center';
+    ctx.fillText('No active containers in risk window', 200, 110);
+  }
+
+  // 2. Completion by line — horizontal bar
+  destroyChart('line');
+  const lineLabels=[], lineComp=[], lineColors=[];
+  Object.entries(s.slSummary).forEach(([ln,v])=>{
+    const c=v.total>0?(v.sudahKeluar/v.total*100):0;
+    lineLabels.push(ln); lineComp.push(parseFloat(c.toFixed(1)));
+    lineColors.push(c>=70?'#3B6D11':c>=40?'#BA7517':'#A32D2D');
+  });
+  document.getElementById('lineLegend').innerHTML = lineLabels.map((ln,i)=>`
+    <span class="legend-item"><span class="legend-dot" style="background:${lineColors[i]};"></span>${ln}: <strong>${lineComp[i]}%</strong></span>`).join('');
+  charts.line = new Chart(document.getElementById('chartLine'), {
+    type:'bar',
+    data:{ labels:lineLabels, datasets:[{
+      label:'Completion %', data:lineComp,
+      backgroundColor:lineColors, borderRadius:4, borderSkipped:false
+    }]},
+    options:{ responsive:true, maintainAspectRatio:false, indexAxis:'y',
+      plugins:{ legend:{display:false}, tooltip:{ callbacks:{ label: ctx=>' '+ctx.raw+'%' }} },
+      scales:{ x:{ min:0, max:100, ticks:{ callback:v=>v+'%', font:{size:11} }, grid:{color:'#e8edf3'} },
+               y:{ ticks:{font:{size:12}}, grid:{display:false} } }
+    }
+  });
+
+  // 3. Depot stacked bar
+  destroyChart('depot');
+  const depotEntries = Object.entries(s.depotMap).sort((a,b)=>b[1].total-a[1].total).slice(0,10);
+  const depotLabels  = depotEntries.map(([d])=>d.length>18?d.slice(0,16)+'…':d);
+  const depotDP      = depotEntries.map(([,v])=>v.dalamProses);
+  const depotSK      = depotEntries.map(([,v])=>v.sudahKeluar);
+  const depotH       = Math.max(200, depotEntries.length * 38 + 60);
+  document.getElementById('depotChartWrap').style.height = depotH+'px';
+  charts.depot = new Chart(document.getElementById('chartDepot'), {
+    type:'bar',
+    data:{ labels:depotLabels, datasets:[
+      { label:'Dalam Proses', data:depotDP, backgroundColor:'#378ADD', borderRadius:0, stack:'s' },
+      { label:'Sudah Keluar', data:depotSK, backgroundColor:'#3B6D11', borderRadius:4, stack:'s' }
+    ]},
+    options:{ responsive:true, maintainAspectRatio:false, indexAxis:'y',
+      plugins:{ legend:{display:false},
+        tooltip:{ callbacks:{ afterTitle: items=>{
+          const i=items[0].dataIndex;
+          const tot=(depotDP[i]||0)+(depotSK[i]||0);
+          return 'Total: '+tot;
+        }}}
+      },
+      scales:{ x:{ stacked:true, ticks:{font:{size:11}}, grid:{color:'#e8edf3'} },
+               y:{ stacked:true, ticks:{font:{size:11}}, grid:{display:false} } }
+    }
+  });
+
+  // 4. Container type horizontal bar
+  destroyChart('ctype');
+  const ctypeEntries = Object.entries(s.ctypeMap).sort((a,b)=>(parseInt(a[0])||0)-(parseInt(b[0])||0));
+  const ctypeLabels  = ctypeEntries.map(([t])=>t);
+  const ctypeFound   = ctypeEntries.map(([,v])=>v.f);
+  const ctypeMissing = ctypeEntries.map(([,v])=>v.m);
+  const ctypeH       = Math.max(200, ctypeEntries.length * 38 + 60);
+  document.getElementById('ctypeChartWrap').style.height = ctypeH+'px';
+  charts.ctype = new Chart(document.getElementById('chartCtype'), {
+    type:'bar',
+    data:{ labels:ctypeLabels, datasets:[
+      { label:'Location found',   data:ctypeFound,   backgroundColor:'#3B6D11', borderRadius:0, stack:'s' },
+      { label:'Location missing', data:ctypeMissing, backgroundColor:'#E24B4A', borderRadius:4, stack:'s' }
+    ]},
+    options:{ responsive:true, maintainAspectRatio:false, indexAxis:'y',
+      plugins:{ legend:{display:false} },
+      scales:{ x:{ stacked:true, ticks:{font:{size:11}}, grid:{color:'#e8edf3'} },
+               y:{ stacked:true, ticks:{font:{size:12}}, grid:{display:false} } }
+    }
+  });
+}
+
+// ── DETAIL TABLE ──────────────────────────────────────
 function setDetailFilter(f) {
-  state.detailFilter = f;
-  ['All','Overdue','Critical','Warning','Monitor'].forEach(n => {
-    const el = document.getElementById('rf'+n);
-    if (el) el.classList.remove('active');
+  state.detailFilter=f;
+  ['rfAll','rfOverdue','rfCritical','rfWarning','rfMonitor'].forEach(id=>{
+    const el=document.getElementById(id); if(el) el.classList.remove('active');
   });
-  const map = {all:'rfAll',overdue:'rfOverdue',critical:'rfCritical',warning:'rfWarning',monitor:'rfMonitor'};
-  if (map[f]) document.getElementById(map[f]).classList.add('active');
-
-  // Also highlight KPI card
-  ['kpiOverdue','kpiCritical','kpiWarning','kpiMonitor'].forEach(id => {
-    const el = document.getElementById(id);
-    if (el) el.classList.remove('active');
+  const map={all:'rfAll',overdue:'rfOverdue',critical:'rfCritical',warning:'rfWarning',monitor:'rfMonitor'};
+  if(map[f]) document.getElementById(map[f]).classList.add('active');
+  ['kpiOverdue','kpiCritical','kpiWarning','kpiMonitor'].forEach(id=>{
+    const el=document.getElementById(id); if(el) el.classList.remove('active');
   });
-  const kpiMap = {overdue:'kpiOverdue',critical:'kpiCritical',warning:'kpiWarning',monitor:'kpiMonitor'};
-  if (kpiMap[f]) document.getElementById(kpiMap[f]).classList.add('active');
-
+  const km={overdue:'kpiOverdue',critical:'kpiCritical',warning:'kpiWarning',monitor:'kpiMonitor'};
+  if(km[f]) document.getElementById(km[f]).classList.add('active');
   renderDetailTable();
-  document.getElementById('detailBody').closest('.card').scrollIntoView({behavior:'smooth', block:'start'});
+  document.getElementById('detailBody').closest('.card').scrollIntoView({behavior:'smooth',block:'start'});
 }
 
 function getDetailRows() {
-  const lines = state.filter==='ALL' ? ['MSL','GSL'] : [state.filter];
-  const rows = [];
+  const lines=getLines(), range=getDateRange();
+  const rows=[];
   for (const ln of lines) {
     for (const row of (state[ln]||[])) {
-      const containerNo = String(row[2]||'').trim();
+      const containerNo=String(row[2]||'').trim();
       if (!containerNo) continue;
-      const status = String(row[14]||'').trim();
-      if (status==='Sudah keluar') continue; // active only
-      const daysLeft = Number(row[13]);
-      const risk = getRisk(daysLeft);
-      if (!risk) continue; // outside 7-day window
+      if (!rowInDateRange(row,range)) continue;
+      const status=String(row[14]||'').trim();
+      if (status==='Sudah keluar') continue;
+      const daysLeft=Number(row[13]), risk=getRisk(daysLeft);
+      if (!risk) continue;
+      const reqDateRaw=row[11], reqDateParsed=parseReqDate(String(reqDateRaw||''));
+      const reqDateFmt=reqDateParsed ? reqDateParsed.getDate()+' '+MONTHS[reqDateParsed.getMonth()]+' '+reqDateParsed.getFullYear() : (reqDateRaw||'—');
       rows.push({ ln, containerNo, daysLeft, status, risk,
-        location: String(row[15]||'').trim() || '—',
-        depot:    String(row[9] ||'').trim() || '—',
-        ctype:    String(row[18]||'').trim() || '—',
-        reqDate:  String(row[11]||'').trim() || '—',
+        location:String(row[15]||'').trim()||'—',
+        depot:String(row[9]||'').trim()||'—',
+        ctype:String(row[18]||'').trim()||'—',
+        reqDate:reqDateFmt
       });
     }
   }
@@ -616,194 +811,118 @@ function getDetailRows() {
 }
 
 function renderDetailTable() {
-  const search = (document.getElementById('detailSearch').value||'').toLowerCase().trim();
-  const filter = state.detailFilter;
-  let rows = getDetailRows();
-  if (filter !== 'all') rows = rows.filter(r => r.risk === filter);
-  if (search) rows = rows.filter(r =>
-    r.containerNo.toLowerCase().includes(search) ||
-    r.depot.toLowerCase().includes(search) ||
-    r.location.toLowerCase().includes(search) ||
-    r.ctype.toLowerCase().includes(search) ||
-    r.ln.toLowerCase().includes(search)
+  const search=(document.getElementById('detailSearch').value||'').toLowerCase().trim();
+  const filter=state.detailFilter;
+  let rows=getDetailRows();
+  if (filter!=='all') rows=rows.filter(r=>r.risk===filter);
+  if (search) rows=rows.filter(r=>
+    r.containerNo.toLowerCase().includes(search)||r.depot.toLowerCase().includes(search)||
+    r.location.toLowerCase().includes(search)||r.ctype.toLowerCase().includes(search)||r.ln.toLowerCase().includes(search)
   );
-  // sort: overdue first, then by daysLeft asc
-  const order = {overdue:0,critical:1,warning:2,monitor:3};
-  rows.sort((a,b) => order[a.risk]-order[b.risk] || a.daysLeft-b.daysLeft);
-
-  document.getElementById('detailCount').textContent = rows.length + ' container' + (rows.length!==1?'s':'');
-
-  if (rows.length===0) {
-    document.getElementById('detailBody').innerHTML = '<tr><td colspan="8" class="tbl-empty">No containers match this filter.</td></tr>';
-    return;
-  }
-
-  const riskBadge = {
-    overdue:  '<span class="risk-badge rb-overdue">Overdue</span>',
-    critical: '<span class="risk-badge rb-critical">Critical</span>',
-    warning:  '<span class="risk-badge rb-warning">Warning</span>',
-    monitor:  '<span class="risk-badge rb-monitor">Monitor</span>',
-  };
-  const locStyle = r => r.location==='Missing location'||r.location==='—' ? 'color:var(--red);' : '';
-  const daysStyle = r => r.daysLeft<0 ? 'color:var(--red);font-weight:700;' : r.daysLeft<=3 ? 'color:var(--orange);font-weight:600;' : r.daysLeft<=5 ? 'color:var(--amber);font-weight:600;' : '';
-  const daysLabel = r => r.daysLeft<0 ? r.daysLeft+' days' : r.daysLeft===0 ? 'Today' : r.daysLeft===1 ? 'Tomorrow' : r.daysLeft+' days';
-
-  document.getElementById('detailBody').innerHTML = rows.map(r => `
+  const order={overdue:0,critical:1,warning:2,monitor:3};
+  rows.sort((a,b)=>order[a.risk]-order[b.risk]||a.daysLeft-b.daysLeft);
+  document.getElementById('detailCount').textContent=rows.length+' container'+(rows.length!==1?'s':'');
+  if (rows.length===0) { document.getElementById('detailBody').innerHTML='<tr><td colspan="8" class="tbl-empty">No containers match this filter.</td></tr>'; return; }
+  const rb={overdue:'<span class="risk-badge rb-overdue">Overdue</span>',critical:'<span class="risk-badge rb-critical">Critical</span>',warning:'<span class="risk-badge rb-warning">Warning</span>',monitor:'<span class="risk-badge rb-monitor">Monitor</span>'};
+  const locStyle=r=>r.location==='Missing location'||r.location==='—'?'color:var(--red);':'';
+  const daysStyle=r=>r.daysLeft<0?'color:var(--red);font-weight:700;':r.daysLeft<=3?'color:var(--orange);font-weight:600;':r.daysLeft<=5?'color:var(--amber);font-weight:600;':'';
+  const daysLabel=r=>r.daysLeft<0?r.daysLeft+' days':r.daysLeft===0?'Today':r.daysLeft===1?'Tomorrow':r.daysLeft+' days';
+  document.getElementById('detailBody').innerHTML=rows.map(r=>`
     <tr>
       <td style="font-family:monospace;font-size:12px;">${r.containerNo}</td>
-      <td>${r.ln}</td>
-      <td>${r.ctype}</td>
-      <td>${r.depot}</td>
-      <td style="${daysStyle(r)}">${daysLabel(r)}</td>
-      <td>${riskBadge[r.risk]}</td>
-      <td style="${locStyle(r)}">${r.location}</td>
+      <td>${r.ln}</td><td>${r.ctype}</td><td>${r.depot}</td>
       <td style="color:var(--text3);">${r.reqDate}</td>
+      <td style="${daysStyle(r)}">${daysLabel(r)}</td>
+      <td>${rb[r.risk]}</td>
+      <td style="${locStyle(r)}">${r.location}</td>
     </tr>`).join('');
 }
 
-// ─────────────────────────────────────────────────────
-// EXPORT FUNCTIONS
-// ─────────────────────────────────────────────────────
+// ── EXPORT ────────────────────────────────────────────
 function buildExportData() {
-  const lines = state.filter==='ALL' ? ['MSL','GSL'] : [state.filter];
-  const header = ['Shipping Line','Container No','Type','Depot','Days Left','Risk','Status','Location','Req Date'];
-  const data = [header];
+  const lines=getLines(), range=getDateRange();
+  const header=['Shipping Line','Container No','Type','Depot','Req Date','Days Left','Risk','Status','Location'];
+  const data=[header];
   for (const ln of lines) {
     for (const row of (state[ln]||[])) {
-      const containerNo = String(row[2]||'').trim();
-      if (!containerNo) continue;
-      const daysLeft = Number(row[13]);
-      const status   = String(row[14]||'').trim();
-      const risk     = status==='Sudah keluar' ? 'Completed' : (getRisk(daysLeft)||'OK');
-      data.push([
-        ln, containerNo,
-        String(row[18]||'').trim()||'—',
-        String(row[9] ||'').trim()||'—',
-        daysLeft, risk, status,
-        String(row[15]||'').trim()||'—',
-        String(row[11]||'').trim()||'—',
-      ]);
+      const containerNo=String(row[2]||'').trim();
+      if (!containerNo||!rowInDateRange(row,range)) continue;
+      const daysLeft=Number(row[13]), status=String(row[14]||'').trim();
+      const risk=status==='Sudah keluar'?'Completed':(getRisk(daysLeft)||'OK');
+      data.push([ln,containerNo,String(row[18]||'').trim()||'—',String(row[9]||'').trim()||'—',
+        String(row[11]||'').trim()||'—',daysLeft,risk,status,String(row[15]||'').trim()||'—']);
     }
   }
   return data;
 }
-
 function buildDetailExportData() {
-  const search = (document.getElementById('detailSearch').value||'').toLowerCase().trim();
-  const filter = state.detailFilter;
-  let rows = getDetailRows();
-  if (filter!=='all') rows = rows.filter(r => r.risk===filter);
-  if (search) rows = rows.filter(r =>
-    r.containerNo.toLowerCase().includes(search) ||
-    r.depot.toLowerCase().includes(search) ||
-    r.location.toLowerCase().includes(search)
-  );
+  const search=(document.getElementById('detailSearch').value||'').toLowerCase().trim();
+  let rows=getDetailRows();
+  if (state.detailFilter!=='all') rows=rows.filter(r=>r.risk===state.detailFilter);
+  if (search) rows=rows.filter(r=>r.containerNo.toLowerCase().includes(search)||r.depot.toLowerCase().includes(search)||r.location.toLowerCase().includes(search));
   const order={overdue:0,critical:1,warning:2,monitor:3};
   rows.sort((a,b)=>order[a.risk]-order[b.risk]||a.daysLeft-b.daysLeft);
-  const header=['Shipping Line','Container No','Type','Depot','Days Left','Risk','Location','Req Date'];
-  return [header, ...rows.map(r=>[r.ln,r.containerNo,r.ctype,r.depot,r.daysLeft,r.risk,r.location,r.reqDate])];
+  return [['Shipping Line','Container No','Type','Depot','Req Date','Days Left','Risk','Location'],
+    ...rows.map(r=>[r.ln,r.containerNo,r.ctype,r.depot,r.reqDate,r.daysLeft,r.risk,r.location])];
 }
+function toCSV(data){ return data.map(r=>r.map(v=>'"'+String(v).replace(/"/g,'""')+'"').join(',')).join('\n'); }
+function downloadFile(content,filename,mime){ const b=new Blob([content],{type:mime}),a=document.createElement('a'); a.href=URL.createObjectURL(b); a.download=filename; a.click(); URL.revokeObjectURL(a.href); }
+function dateStr(){ const d=new Date(); return d.getFullYear()+String(d.getMonth()+1).padStart(2,'0')+String(d.getDate()).padStart(2,'0'); }
+function exportExcel(){ const d=buildExportData(),ws=XLSX.utils.aoa_to_sheet(d),wb=XLSX.utils.book_new(); XLSX.utils.book_append_sheet(wb,ws,'Offhire All'); XLSX.writeFile(wb,'SBS_Offhire_All_'+dateStr()+'.xlsx'); }
+function exportCSV(){ downloadFile(toCSV(buildExportData()),'SBS_Offhire_All_'+dateStr()+'.csv','text/csv'); }
+function exportDetailExcel(){ const d=buildDetailExportData(),ws=XLSX.utils.aoa_to_sheet(d),wb=XLSX.utils.book_new(); XLSX.utils.book_append_sheet(wb,ws,'Offhire Detail'); XLSX.writeFile(wb,'SBS_Offhire_Detail_'+dateStr()+'.xlsx'); }
+function exportDetailCSV(){ downloadFile(toCSV(buildDetailExportData()),'SBS_Offhire_Detail_'+dateStr()+'.csv','text/csv'); }
 
-function toCSV(data) {
-  return data.map(row => row.map(v => '"'+String(v).replace(/"/g,'""')+'"').join(',')).join('\n');
-}
-
-function downloadFile(content, filename, mime) {
-  const blob = new Blob([content], {type: mime});
-  const a = document.createElement('a');
-  a.href = URL.createObjectURL(blob);
-  a.download = filename;
-  a.click();
-  URL.revokeObjectURL(a.href);
-}
-
-function dateStr() {
-  const d=new Date();
-  return d.getFullYear()+String(d.getMonth()+1).padStart(2,'0')+String(d.getDate()).padStart(2,'0');
-}
-
-function exportExcel() {
-  const data = buildExportData();
-  const ws = XLSX.utils.aoa_to_sheet(data);
-  const wb = XLSX.utils.book_new();
-  XLSX.utils.book_append_sheet(wb, ws, 'Offhire All');
-  XLSX.writeFile(wb, 'SBS_Offhire_All_'+dateStr()+'.xlsx');
-}
-function exportCSV() {
-  downloadFile(toCSV(buildExportData()), 'SBS_Offhire_All_'+dateStr()+'.csv', 'text/csv');
-}
-function exportDetailExcel() {
-  const data = buildDetailExportData();
-  const ws = XLSX.utils.aoa_to_sheet(data);
-  const wb = XLSX.utils.book_new();
-  XLSX.utils.book_append_sheet(wb, ws, 'Offhire Detail');
-  XLSX.writeFile(wb, 'SBS_Offhire_Detail_'+dateStr()+'.xlsx');
-}
-function exportDetailCSV() {
-  downloadFile(toCSV(buildDetailExportData()), 'SBS_Offhire_Detail_'+dateStr()+'.csv', 'text/csv');
-}
-
-// ─────────────────────────────────────────────────────
-// RENDER
-// ─────────────────────────────────────────────────────
+// ── RENDER ────────────────────────────────────────────
 function render() {
-  const s = computeStats();
-  const hasData = s.total > 0;
+  const s=computeStats(), hasData=s.total>0;
+  document.getElementById('headerSub').textContent = hasData?fmtNow():'Waiting for data...';
+  document.getElementById('hCompRate').textContent = hasData?s.compRate+'%':'—';
+  document.getElementById('kOverdue').textContent  = hasData?s.overdue:'—';
+  document.getElementById('kCritical').textContent = hasData?s.critical:'—';
+  document.getElementById('kWarning').textContent  = hasData?s.warning:'—';
+  document.getElementById('kMonitor').textContent  = hasData?s.monitor:'—';
+  document.getElementById('sDalamProses').textContent = hasData?s.dalamProses:'—';
+  document.getElementById('sSudahKeluar').textContent = hasData?s.sudahKeluar:'—';
+  document.getElementById('sTotal').textContent       = hasData?s.total:'—';
+  document.getElementById('sLocFound').textContent    = hasData?s.locFound:'—';
+  document.getElementById('sLocMissing').textContent  = hasData?s.locMissing:'—';
+  document.getElementById('sCompPct').textContent     = hasData?s.compRate+'%':'—%';
+  document.getElementById('compBar').style.width      = hasData?s.compRate+'%':'0%';
 
-  document.getElementById('headerSub').textContent = hasData ? fmtNow() : 'Waiting for data...';
-  document.getElementById('hCompRate').textContent = hasData ? s.compRate+'%' : '—';
-  document.getElementById('kOverdue').textContent  = hasData ? s.overdue   : '—';
-  document.getElementById('kCritical').textContent = hasData ? s.critical  : '—';
-  document.getElementById('kWarning').textContent  = hasData ? s.warning   : '—';
-  document.getElementById('kMonitor').textContent  = hasData ? s.monitor   : '—';
-  document.getElementById('sDalamProses').textContent = hasData ? s.dalamProses : '—';
-  document.getElementById('sSudahKeluar').textContent = hasData ? s.sudahKeluar : '—';
-  document.getElementById('sTotal').textContent       = hasData ? s.total       : '—';
-  document.getElementById('sLocFound').textContent    = hasData ? s.locFound    : '—';
-  document.getElementById('sLocMissing').textContent  = hasData ? s.locMissing  : '—';
-  document.getElementById('sCompPct').textContent     = hasData ? s.compRate+'%': '—%';
-  document.getElementById('compBar').style.width      = hasData ? s.compRate+'%': '0%';
-
-  const hColor = s.health>=80?'#3B6D11':s.health>=60?'#BA7517':s.health>=40?'#854F0B':'#A32D2D';
-  const hLabel = s.health>=80?'Good':s.health>=60?'Fair':s.health>=40?'At risk':'Critical';
-  document.getElementById('healthBox').style.background = hasData ? hColor : '#ccc';
-  document.getElementById('healthNum').textContent      = hasData ? s.health : '—';
-  document.getElementById('healthLabel').textContent    = hasData ? hLabel   : '—';
-  document.getElementById('healthLabel').style.color    = hasData ? hColor   : 'var(--text3)';
+  const hColor=s.health>=80?'#3B6D11':s.health>=60?'#BA7517':s.health>=40?'#854F0B':'#A32D2D';
+  const hLabel=s.health>=80?'Good':s.health>=60?'Fair':s.health>=40?'At risk':'Critical';
+  document.getElementById('healthBox').style.background = hasData?hColor:'#ccc';
+  document.getElementById('healthNum').textContent      = hasData?s.health:'—';
+  document.getElementById('healthLabel').textContent    = hasData?hLabel:'—';
+  document.getElementById('healthLabel').style.color    = hasData?hColor:'var(--text3)';
   document.getElementById('healthBar').style.background = hColor;
-  document.getElementById('healthBar').style.width      = hasData ? s.health+'%' : '0%';
-  document.getElementById('sBlindSpot').textContent = hasData ? s.blindSpot     : '—';
-  document.getElementById('sToday').textContent     = hasData ? s.todayCount    : '—';
-  document.getElementById('sTomorrow').textContent  = hasData ? s.tomorrowCount : '—';
+  document.getElementById('healthBar').style.width      = hasData?s.health+'%':'0%';
+  document.getElementById('sBlindSpot').textContent = hasData?s.blindSpot:'—';
+  document.getElementById('sToday').textContent     = hasData?s.todayCount:'—';
+  document.getElementById('sTomorrow').textContent  = hasData?s.tomorrowCount:'—';
 
-  // INSIGHTS
-  let ins = '';
+  let ins='';
   if (hasData) {
     if (s.blindSpot>0) ins+=`<div class="insight insight-danger"><i class="ti ti-alert-triangle"></i><div><strong>${s.blindSpot} container${s.blindSpot>1?'s are':' is'} overdue/critical with unknown location</strong> — immediate tracing required.</div></div>`;
     if (s.todayCount>0) ins+=`<div class="insight insight-danger"><i class="ti ti-clock"></i><div><strong>${s.todayCount} container${s.todayCount>1?'s expire':'expires'} today</strong> — escalate to depot immediately.</div></div>`;
     if (s.tomorrowCount>0) ins+=`<div class="insight insight-warning"><i class="ti ti-calendar-event"></i><div><strong>${s.tomorrowCount} container${s.tomorrowCount>1?'s expire':' expires'} tomorrow</strong> — confirm redelivery plan today.</div></div>`;
-    if (s.overdue>0 && s.blindSpot===0) ins+=`<div class="insight insight-success"><i class="ti ti-check"></i><div>All overdue containers have known locations — coordinate urgent redelivery with depot.</div></div>`;
+    if (s.overdue>0&&s.blindSpot===0) ins+=`<div class="insight insight-success"><i class="ti ti-check"></i><div>All overdue containers have known locations — coordinate urgent redelivery with depot.</div></div>`;
     if (parseFloat(s.compRate)>=70) ins+=`<div class="insight insight-success"><i class="ti ti-trending-up"></i><div>Completion rate is strong at <strong>${s.compRate}%</strong> — good progress this cycle.</div></div>`;
     else if (parseFloat(s.compRate)<40) ins+=`<div class="insight insight-warning"><i class="ti ti-chart-bar"></i><div>Completion rate is low at <strong>${s.compRate}%</strong> — review evacuation pipeline and depot capacity.</div></div>`;
     if (!ins) ins=`<div class="insight insight-success"><i class="ti ti-check"></i><div>No critical observations at this time.</div></div>`;
   } else {
     ins=`<div class="insight insight-neutral"><i class="ti ti-loader-2"></i>Loading live data from Google Sheet...</div>`;
   }
-  document.getElementById('insightsBody').innerHTML = ins;
+  document.getElementById('insightsBody').innerHTML=ins;
 
   const rl=s.riskLoc;
-  document.getElementById('riskLocBody').innerHTML = hasData ? `
-    <tr><td class="col-overdue" style="font-weight:600;">Overdue</td><td class="col-green">${rl.overdue.f}</td><td class="col-red">${rl.overdue.m}</td></tr>
-    <tr><td class="col-critical" style="font-weight:600;">Critical</td><td class="col-green">${rl.critical.f}</td><td class="col-red">${rl.critical.m}</td></tr>
-    <tr><td class="col-warning" style="font-weight:600;">Warning</td><td class="col-green">${rl.warning.f}</td><td class="col-red">${rl.warning.m}</td></tr>
-    <tr><td class="col-monitor" style="font-weight:600;">Monitor</td><td class="col-green">${rl.monitor.f}</td><td class="col-red">${rl.monitor.m}</td></tr>
-  ` : '<tr><td colspan="3" class="tbl-empty">—</td></tr>';
-
-  let ctRows='';
-  Object.entries(s.ctypeMap).sort((a,b)=>(parseInt(a[0])||0)-(parseInt(b[0])||0)).forEach(([t,v])=>{
-    ctRows+=`<tr><td>${t}</td><td>${v.total}</td><td class="col-green">${v.f}</td><td class="col-red">${v.m}</td></tr>`;
-  });
-  document.getElementById('ctypeBody').innerHTML = ctRows||'<tr><td colspan="4" class="tbl-empty">—</td></tr>';
+  document.getElementById('riskLocBody').innerHTML=hasData?`
+    <tr><td class="col-overdue" style="font-weight:600;">Overdue</td><td>${s.overdue}</td><td class="col-green">${rl.overdue.f}</td><td class="col-red">${rl.overdue.m}</td></tr>
+    <tr><td class="col-critical" style="font-weight:600;">Critical</td><td>${s.critical}</td><td class="col-green">${rl.critical.f}</td><td class="col-red">${rl.critical.m}</td></tr>
+    <tr><td class="col-warning" style="font-weight:600;">Warning</td><td>${s.warning}</td><td class="col-green">${rl.warning.f}</td><td class="col-red">${rl.warning.m}</td></tr>
+    <tr><td class="col-monitor" style="font-weight:600;">Monitor</td><td>${s.monitor}</td><td class="col-green">${rl.monitor.f}</td><td class="col-red">${rl.monitor.m}</td></tr>
+  `:'<tr><td colspan="4" class="tbl-empty">—</td></tr>';
 
   let slRows='';
   Object.entries(s.slSummary).forEach(([ln,v])=>{
@@ -811,20 +930,13 @@ function render() {
     const bc=parseFloat(comp)>=70?'badge-good':parseFloat(comp)>=40?'badge-warning':'badge-critical';
     slRows+=`<tr><td style="font-weight:600;">${ln}</td><td>${v.total}</td><td>${v.dalamProses}</td><td class="col-green">${v.sudahKeluar}</td><td class="col-overdue">${v.overdue}</td><td class="col-critical">${v.critical}</td><td class="col-warning">${v.warning}</td><td class="col-monitor">${v.monitor}</td><td><span class="badge ${bc}">${comp}%</span></td></tr>`;
   });
-  document.getElementById('shippingLineBody').innerHTML = slRows||'<tr><td colspan="9" class="tbl-empty">—</td></tr>';
+  document.getElementById('shippingLineBody').innerHTML=slRows||'<tr><td colspan="9" class="tbl-empty">—</td></tr>';
 
-  let depotRows='';
-  Object.entries(s.depotMap).sort((a,b)=>b[1].dalamProses-a[1].dalamProses).forEach(([depot,v])=>{
-    depotRows+=`<tr><td>${depot}</td><td>${v.total}</td><td>${v.dalamProses}</td><td class="col-green">${v.sudahKeluar}</td></tr>`;
-  });
-  document.getElementById('depotBody').innerHTML = depotRows||'<tr><td colspan="4" class="tbl-empty">—</td></tr>';
-
+  renderCharts(s);
   renderDetailTable();
 }
 
-// ─────────────────────────────────────────────────────
-// INIT
-// ─────────────────────────────────────────────────────
+// ── INIT ──────────────────────────────────────────────
 if (sessionStorage.getItem(SESSION_KEY)==='1') {
   fetchAllData();
   setInterval(fetchAllData, REFRESH_MS);
