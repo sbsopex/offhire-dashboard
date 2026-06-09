@@ -1,0 +1,553 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SBS Offhire Dashboard</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@3.19.0/dist/tabler-icons.min.css">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  :root {
+    --navy: #1b3a5c; --navy-light: #2a5280;
+    --red: #A32D2D; --amber: #BA7517; --green: #3B6D11; --orange: #854F0B;
+    --bg: #f0f2f5; --surface: #ffffff; --surface2: #f7f9fc;
+    --border: #d0d8e4; --text: #1a2333; --text2: #5a6a7e; --text3: #8a99aa;
+    --radius: 10px; --radius-sm: 6px;
+  }
+  body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Arial, sans-serif; background: var(--bg); color: var(--text); font-size: 13px; line-height: 1.5; }
+  .page { max-width: 1100px; margin: 0 auto; padding: 20px 16px 40px; }
+
+  /* HEADER */
+  .header { background: var(--navy); border-radius: var(--radius); padding: 18px 24px; display: flex; align-items: center; justify-content: space-between; margin-bottom: 16px; }
+  .header-brand { font-size: 9px; color: #7fb8e0; letter-spacing: 2px; text-transform: uppercase; margin-bottom: 4px; }
+  .header-title { font-size: 18px; font-weight: 600; color: #fff; display: flex; align-items: center; gap: 8px; }
+  .header-title i { font-size: 20px; }
+  .header-sub { font-size: 11px; color: #a8cce8; margin-top: 3px; }
+  .header-right { display: flex; align-items: center; gap: 12px; flex-shrink: 0; }
+  .completion-box { text-align: center; background: rgba(255,255,255,0.12); border: 1.5px solid #7fb8e0; border-radius: var(--radius-sm); padding: 10px 20px; }
+  .completion-num { font-size: 24px; font-weight: 700; color: #fff; line-height: 1; }
+  .completion-lbl { font-size: 9px; color: #a8cce8; letter-spacing: 1.5px; margin-top: 3px; }
+
+  /* STATUS BAR */
+  .status-bar { display: flex; align-items: center; justify-content: space-between; margin-bottom: 14px; flex-wrap: wrap; gap: 8px; }
+  .status-pill { display: flex; align-items: center; gap: 6px; font-size: 11px; color: var(--text2); background: var(--surface); border: 1px solid var(--border); border-radius: 100px; padding: 5px 12px; }
+  .status-pill i { font-size: 14px; }
+  .status-pill.ok { color: var(--green); border-color: #c0dd97; background: #f4faea; }
+  .status-pill.loading { color: var(--amber); border-color: #fac775; background: #fffbf0; }
+  .status-pill.error { color: var(--red); border-color: #f7c1c1; background: #fff0f0; }
+  .refresh-btn { display: flex; align-items: center; gap: 6px; font-size: 11px; font-family: inherit; color: var(--navy); background: var(--surface); border: 1px solid var(--border); border-radius: 100px; padding: 5px 14px; cursor: pointer; transition: background 0.15s; }
+  .refresh-btn:hover { background: var(--surface2); }
+  .refresh-btn i { font-size: 14px; }
+  select { font-family: inherit; font-size: 12px; padding: 5px 12px; border-radius: 100px; border: 1px solid var(--border); background: var(--surface); color: var(--text); cursor: pointer; }
+
+  /* KPI */
+  .kpi-strip { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin-bottom: 14px; }
+  .kpi-card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 16px 12px; text-align: center; position: relative; overflow: hidden; }
+  .kpi-card::after { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 3px; }
+  .kpi-overdue::after  { background: var(--red); }
+  .kpi-critical::after { background: var(--orange); }
+  .kpi-warning::after  { background: var(--amber); }
+  .kpi-monitor::after  { background: var(--green); }
+  .kpi-num { font-size: 32px; font-weight: 700; line-height: 1; }
+  .kpi-lbl { font-size: 9px; letter-spacing: 1.5px; color: var(--text3); margin-top: 5px; text-transform: uppercase; }
+  .kpi-sub { font-size: 11px; color: var(--text3); margin-top: 4px; }
+  .col-overdue { color: var(--red); } .col-critical { color: var(--orange); }
+  .col-warning { color: var(--amber); } .col-monitor { color: var(--green); }
+  .col-green { color: var(--green); } .col-red { color: var(--red); }
+
+  /* LAYOUT */
+  .row2 { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-bottom: 14px; }
+  .full { margin-bottom: 14px; }
+  .card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 16px 18px; }
+  .card-title { font-size: 10px; font-weight: 600; letter-spacing: 1.2px; color: var(--text2); text-transform: uppercase; margin-bottom: 14px; display: flex; align-items: center; gap: 6px; }
+  .card-title i { font-size: 15px; color: var(--navy); }
+
+  /* INSIGHTS */
+  .insight { padding: 10px 14px; border-radius: 0 var(--radius-sm) var(--radius-sm) 0; border-left: 3px solid; margin-bottom: 8px; font-size: 12px; line-height: 1.6; display: flex; align-items: flex-start; gap: 8px; }
+  .insight i { font-size: 15px; flex-shrink: 0; margin-top: 1px; }
+  .insight:last-child { margin-bottom: 0; }
+  .insight-danger  { background: #fff0f0; border-color: var(--red);   color: #5a0000; }
+  .insight-warning { background: #fffbf0; border-color: var(--amber); color: #4a3000; }
+  .insight-success { background: #f0fff4; border-color: var(--green); color: #1a4000; }
+  .insight-neutral { background: var(--surface2); border-color: var(--border); color: var(--text2); font-style: italic; }
+
+  /* STATS */
+  .stat-row { display: flex; justify-content: space-between; align-items: center; padding: 8px 0; border-bottom: 1px solid var(--border); font-size: 13px; }
+  .stat-row:last-child { border-bottom: none; }
+  .stat-lbl { color: var(--text2); }
+  .stat-val { font-weight: 600; }
+  .prog-wrap { margin-top: 10px; }
+  .prog-labels { display: flex; justify-content: space-between; font-size: 11px; color: var(--text3); margin-bottom: 5px; }
+  .prog-bg { height: 7px; background: var(--bg); border-radius: 4px; overflow: hidden; }
+  .prog-fill { height: 100%; border-radius: 4px; transition: width 0.9s ease; }
+
+  /* HEALTH */
+  .health-box { width: 60px; height: 60px; border-radius: var(--radius-sm); display: flex; flex-direction: column; align-items: center; justify-content: center; flex-shrink: 0; }
+  .health-num { font-size: 24px; font-weight: 700; color: #fff; line-height: 1; }
+  .health-unit { font-size: 9px; color: rgba(255,255,255,0.7); margin-top: 2px; }
+  .health-bar-wrap { height: 8px; background: var(--bg); border-radius: 4px; overflow: hidden; margin-top: 10px; }
+  .health-bar { height: 100%; border-radius: 4px; transition: width 0.9s ease; }
+
+  /* TABLES */
+  .tbl-wrap { overflow-x: auto; }
+  table { width: 100%; border-collapse: collapse; font-size: 12px; }
+  thead th { padding: 8px 10px; background: var(--surface2); color: var(--text2); font-weight: 600; font-size: 10px; letter-spacing: 0.5px; text-align: center; border-bottom: 1px solid var(--border); white-space: nowrap; }
+  thead th:first-child { text-align: left; }
+  tbody td { padding: 8px 10px; border-bottom: 1px solid var(--border); text-align: center; }
+  tbody td:first-child { text-align: left; font-weight: 500; }
+  tbody tr:last-child td { border-bottom: none; }
+  tbody tr:hover td { background: var(--surface2); }
+  .tbl-empty { text-align: center !important; color: var(--text3) !important; font-style: italic; padding: 20px !important; font-weight: 400 !important; }
+
+  /* BADGE */
+  .badge { display: inline-block; padding: 2px 9px; border-radius: 100px; font-size: 10px; font-weight: 600; }
+  .badge-good     { background: #eaf3de; color: #2d5e0a; }
+  .badge-warning  { background: #faeeda; color: #7a4500; }
+  .badge-critical { background: #faece7; color: #7a2000; }
+
+  /* SKELETON LOADER */
+  .skeleton { background: linear-gradient(90deg, var(--surface2) 25%, var(--border) 50%, var(--surface2) 75%); background-size: 200% 100%; animation: shimmer 1.4s infinite; border-radius: 4px; display: inline-block; }
+  @keyframes shimmer { 0% { background-position: 200% 0; } 100% { background-position: -200% 0; } }
+
+  /* FOOTER */
+  footer { text-align: center; font-size: 11px; color: var(--text3); padding-top: 20px; border-top: 1px solid var(--border); }
+
+  @media (max-width: 700px) {
+    .kpi-strip { grid-template-columns: repeat(2, 1fr); }
+    .row2 { grid-template-columns: 1fr; }
+    .header { flex-direction: column; align-items: flex-start; gap: 12px; }
+    .header-right { width: 100%; justify-content: space-between; }
+  }
+</style>
+</head>
+<body>
+<div class="page">
+
+  <!-- HEADER -->
+  <div class="header">
+    <div>
+      <div class="header-brand">Seacon Bintang Sejahtera</div>
+      <div class="header-title"><i class="ti ti-ship"></i> Offhire Monitoring Dashboard</div>
+      <div class="header-sub" id="headerSub">Connecting to Google Sheet...</div>
+    </div>
+    <div class="header-right">
+      <select id="lineFilter" onchange="applyFilter()">
+        <option value="ALL">All lines</option>
+        <option value="MSL">MSL only</option>
+        <option value="GSL">GSL only</option>
+      </select>
+      <div class="completion-box">
+        <div class="completion-num" id="hCompRate">—</div>
+        <div class="completion-lbl">Completion</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- STATUS BAR -->
+  <div class="status-bar">
+    <div class="status-pill loading" id="statusPill">
+      <i class="ti ti-loader-2" id="statusIcon"></i>
+      <span id="statusText">Loading data from Google Sheet...</span>
+    </div>
+    <div style="display:flex; gap:8px; align-items:center;">
+      <select id="lineFilter2" onchange="document.getElementById('lineFilter').value=this.value; applyFilter();" style="display:none;"></select>
+      <button class="refresh-btn" onclick="fetchAllData()">
+        <i class="ti ti-refresh"></i> Refresh now
+      </button>
+    </div>
+  </div>
+
+  <!-- KPI STRIP -->
+  <div class="kpi-strip">
+    <div class="kpi-card kpi-overdue">
+      <div class="kpi-num col-overdue" id="kOverdue">—</div>
+      <div class="kpi-lbl">Overdue</div>
+      <div class="kpi-sub">Past deadline</div>
+    </div>
+    <div class="kpi-card kpi-critical">
+      <div class="kpi-num col-critical" id="kCritical">—</div>
+      <div class="kpi-lbl">Critical</div>
+      <div class="kpi-sub">0 – 3 days</div>
+    </div>
+    <div class="kpi-card kpi-warning">
+      <div class="kpi-num col-warning" id="kWarning">—</div>
+      <div class="kpi-lbl">Warning</div>
+      <div class="kpi-sub">4 – 5 days</div>
+    </div>
+    <div class="kpi-card kpi-monitor">
+      <div class="kpi-num col-monitor" id="kMonitor">—</div>
+      <div class="kpi-lbl">Monitor</div>
+      <div class="kpi-sub">6 – 7 days</div>
+    </div>
+  </div>
+
+  <!-- INSIGHTS -->
+  <div class="card full">
+    <div class="card-title"><i class="ti ti-bolt"></i> Operational insights</div>
+    <div id="insightsBody">
+      <div class="insight insight-neutral"><i class="ti ti-loader-2"></i> Loading data from Google Sheet...</div>
+    </div>
+  </div>
+
+  <!-- STATUS + HEALTH -->
+  <div class="row2">
+    <div class="card">
+      <div class="card-title"><i class="ti ti-chart-donut"></i> Container status</div>
+      <div class="stat-row"><span class="stat-lbl">Dalam Proses</span><span class="stat-val" id="sDalamProses">—</span></div>
+      <div class="stat-row"><span class="stat-lbl">Sudah Keluar</span><span class="stat-val col-green" id="sSudahKeluar">—</span></div>
+      <div class="stat-row"><span class="stat-lbl">Total containers</span><span class="stat-val" id="sTotal">—</span></div>
+      <div class="stat-row" style="margin-top:8px; border-top: 2px solid var(--border); padding-top:10px;">
+        <span class="stat-lbl">Location found</span><span class="stat-val col-green" id="sLocFound">—</span>
+      </div>
+      <div class="stat-row"><span class="stat-lbl">Location missing</span><span class="stat-val col-red" id="sLocMissing">—</span></div>
+      <div class="prog-wrap">
+        <div class="prog-labels"><span>Completion rate</span><span id="sCompPct">—%</span></div>
+        <div class="prog-bg"><div class="prog-fill" id="compBar" style="background:var(--green); width:0%;"></div></div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-title"><i class="ti ti-heart-rate-monitor"></i> Operational health score</div>
+      <div style="display:flex; align-items:center; gap:14px; margin-bottom:12px;">
+        <div class="health-box" id="healthBox" style="background:#ccc;">
+          <div class="health-num" id="healthNum">—</div>
+          <div class="health-unit">/100</div>
+        </div>
+        <div>
+          <div id="healthLabel" style="font-size:16px; font-weight:700; margin-bottom:3px; color:var(--text3);">—</div>
+          <div style="font-size:11px; color:var(--text2); line-height:1.6;">Based on overdue rate, critical exposure,<br>blind spots & location coverage.<br><strong>Target: 80 or above = Good</strong></div>
+        </div>
+      </div>
+      <div class="health-bar-wrap"><div class="health-bar" id="healthBar" style="width:0%;"></div></div>
+      <div style="margin-top:12px;">
+        <div class="stat-row"><span class="stat-lbl">Blind spots (overdue/critical, no location)</span><span class="stat-val col-red" id="sBlindSpot">—</span></div>
+        <div class="stat-row"><span class="stat-lbl">Expiring today</span><span class="stat-val col-red" id="sToday">—</span></div>
+        <div class="stat-row"><span class="stat-lbl">Expiring tomorrow</span><span class="stat-val col-warning" id="sTomorrow">—</span></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SHIPPING LINE -->
+  <div class="card full">
+    <div class="card-title"><i class="ti ti-ship"></i> Shipping line summary</div>
+    <div class="tbl-wrap">
+      <table>
+        <thead><tr>
+          <th>Line</th><th>Total</th><th>Dalam Proses</th><th>Sudah Keluar</th>
+          <th>Overdue</th><th>Critical</th><th>Warning</th><th>Monitor</th><th>Completion</th>
+        </tr></thead>
+        <tbody id="shippingLineBody"><tr><td colspan="9" class="tbl-empty">Loading...</td></tr></tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- RISK + CTYPE -->
+  <div class="row2">
+    <div class="card">
+      <div class="card-title"><i class="ti ti-map-pin"></i> Risk by location status</div>
+      <div class="tbl-wrap">
+        <table>
+          <thead><tr><th>Category</th><th>Found</th><th>Missing</th></tr></thead>
+          <tbody id="riskLocBody"><tr><td colspan="3" class="tbl-empty">Loading...</td></tr></tbody>
+        </table>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-title"><i class="ti ti-box"></i> Container type (active only)</div>
+      <div class="tbl-wrap">
+        <table>
+          <thead><tr><th>Type</th><th>Total</th><th>Found</th><th>Missing</th></tr></thead>
+          <tbody id="ctypeBody"><tr><td colspan="4" class="tbl-empty">Loading...</td></tr></tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- DEPOT -->
+  <div class="card full">
+    <div class="card-title"><i class="ti ti-building-warehouse"></i> Redelivery depot summary</div>
+    <div class="tbl-wrap">
+      <table>
+        <thead><tr><th>Depot name</th><th>Total</th><th>Dalam Proses</th><th>Sudah Keluar</th></tr></thead>
+        <tbody id="depotBody"><tr><td colspan="4" class="tbl-empty">Loading...</td></tr></tbody>
+      </table>
+    </div>
+  </div>
+
+  <footer>
+    &copy; SBS Operations Excellence Team &nbsp;&middot;&nbsp; Seacon Bintang Sejahtera &nbsp;&middot;&nbsp; Container Depot Operations<br>
+    <span style="font-size:10px;">Data refreshes automatically every 5 minutes &nbsp;&middot;&nbsp; Last update: <span id="footerTime">—</span></span>
+  </footer>
+</div>
+
+<script>
+// ─────────────────────────────────────────────
+// CONFIG — your Google Spreadsheet ID
+// ─────────────────────────────────────────────
+const SHEET_ID = '1VgyCWMtSnNknlL4SgE9Q5DvGj7cR7IBQNnUkL3kZCQU';
+const SHEETS   = { MSL: 'Offhire MSL', GSL: 'Offhire GSL' };
+const REFRESH_INTERVAL_MS = 5 * 60 * 1000; // 5 minutes
+
+// ─────────────────────────────────────────────
+// STATE
+// ─────────────────────────────────────────────
+const state = { MSL: [], GSL: [], filter: 'ALL', lastFetch: null };
+const months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+
+function fmtNow() {
+  const d = new Date();
+  return d.getDate()+' '+months[d.getMonth()]+' '+d.getFullYear()+
+    ' \u00b7 '+String(d.getHours()).padStart(2,'0')+':'+String(d.getMinutes()).padStart(2,'0');
+}
+
+// ─────────────────────────────────────────────
+// FETCH DATA via gviz endpoint (works with
+// "Publish to web" — no API key needed)
+// ─────────────────────────────────────────────
+function gvizUrl(sheetName) {
+  return 'https://docs.google.com/spreadsheets/d/'+SHEET_ID+
+    '/gviz/tq?tqx=out:json&sheet='+encodeURIComponent(sheetName);
+}
+
+function parseGviz(raw) {
+  // Strip Google's JS wrapper: /*O_o*/\ngoogle.visualization.Query.setResponse({...});
+  const json = JSON.parse(raw.replace(/^[^{]*/, '').replace(/\);?\s*$/, ''));
+  const rows  = json.table.rows;
+  const cols  = json.table.cols;
+  return rows.map(r =>
+    r.c.map((cell, i) => {
+      if (!cell || cell.v === null || cell.v === undefined) return null;
+      // Dates come as "Date(year,month,day)" strings
+      if (typeof cell.v === 'string' && cell.v.startsWith('Date(')) return cell.f || cell.v;
+      return cell.v;
+    })
+  );
+}
+
+async function fetchSheet(sheetName) {
+  const url = gvizUrl(sheetName);
+  const res  = await fetch(url);
+  if (!res.ok) throw new Error('HTTP '+res.status+' fetching '+sheetName);
+  const text = await res.text();
+  return parseGviz(text);
+}
+
+function setStatus(type, msg) {
+  const pill = document.getElementById('statusPill');
+  const icon = document.getElementById('statusIcon');
+  const text = document.getElementById('statusText');
+  pill.className = 'status-pill ' + type;
+  icon.className = type === 'loading' ? 'ti ti-loader-2' : type === 'ok' ? 'ti ti-circle-check' : 'ti ti-alert-circle';
+  text.textContent = msg;
+}
+
+async function fetchAllData() {
+  setStatus('loading', 'Refreshing data from Google Sheet...');
+  try {
+    const [mslRows, gslRows] = await Promise.all([
+      fetchSheet(SHEETS.MSL),
+      fetchSheet(SHEETS.GSL)
+    ]);
+    // Skip header row (index 0)
+    state.MSL = mslRows.slice(1).filter(r => r[2]);
+    state.GSL = gslRows.slice(1).filter(r => r[2]);
+    state.lastFetch = new Date();
+    setStatus('ok', 'Live \u00b7 Last synced '+fmtNow());
+    document.getElementById('footerTime').textContent = fmtNow();
+    render();
+  } catch(e) {
+    setStatus('error', 'Could not load sheet. Check it is published to web. \u2192 '+e.message);
+    console.error(e);
+  }
+}
+
+function applyFilter() {
+  state.filter = document.getElementById('lineFilter').value;
+  render();
+}
+
+// ─────────────────────────────────────────────
+// COMPUTE
+// ─────────────────────────────────────────────
+function computeStats() {
+  const lines = state.filter === 'ALL' ? ['MSL','GSL'] : [state.filter];
+  let overdue=0, critical=0, warning=0, monitor=0;
+  let dalamProses=0, sudahKeluar=0, locFound=0, locMissing=0;
+  let blindSpot=0, todayCount=0, tomorrowCount=0;
+  const riskLoc   = { overdue:{f:0,m:0}, critical:{f:0,m:0}, warning:{f:0,m:0}, monitor:{f:0,m:0} };
+  const slSummary = {};
+  const depotMap  = {};
+  const ctypeMap  = {};
+
+  for (const ln of lines) {
+    const data = state[ln] || [];
+    slSummary[ln] = { total:0, dalamProses:0, sudahKeluar:0, overdue:0, critical:0, warning:0, monitor:0 };
+    for (const row of data) {
+      const containerNo = String(row[2]||'').trim();
+      if (!containerNo) continue;
+      const daysLeft = Number(row[13]);
+      const status   = String(row[14]||'').trim();
+      const location = String(row[15]||'').trim();
+      const depot    = String(row[9] ||'').trim();
+      const ctype    = String(row[18]||'').trim();
+      const isFound  = location && location !== 'Missing location';
+
+      slSummary[ln].total++;
+      if (isFound) locFound++; else locMissing++;
+
+      if (depot) {
+        if (!depotMap[depot]) depotMap[depot] = { total:0, dalamProses:0, sudahKeluar:0 };
+        if (status === 'Sudah keluar') depotMap[depot].sudahKeluar++;
+        else depotMap[depot].dalamProses++;
+        depotMap[depot].total = depotMap[depot].dalamProses + depotMap[depot].sudahKeluar;
+      }
+
+      if (status === 'Sudah keluar') { sudahKeluar++; slSummary[ln].sudahKeluar++; }
+      else                           { dalamProses++; slSummary[ln].dalamProses++; }
+
+      if (ctype && status !== 'Sudah keluar') {
+        if (!ctypeMap[ctype]) ctypeMap[ctype] = { total:0, f:0, m:0 };
+        ctypeMap[ctype].total++;
+        if (!isFound) ctypeMap[ctype].m++; else ctypeMap[ctype].f++;
+      }
+
+      if (status !== 'Sudah keluar') {
+        if (daysLeft < 0) {
+          overdue++; slSummary[ln].overdue++;
+          if (isFound) riskLoc.overdue.f++; else { riskLoc.overdue.m++; blindSpot++; }
+        } else if (daysLeft <= 3) {
+          critical++; slSummary[ln].critical++;
+          if (isFound) riskLoc.critical.f++; else { riskLoc.critical.m++; blindSpot++; }
+          if (daysLeft === 0) todayCount++;
+          if (daysLeft === 1) tomorrowCount++;
+        } else if (daysLeft <= 5) {
+          warning++; slSummary[ln].warning++;
+          if (isFound) riskLoc.warning.f++; else riskLoc.warning.m++;
+        } else if (daysLeft <= 7) {
+          monitor++; slSummary[ln].monitor++;
+          if (isFound) riskLoc.monitor.f++; else riskLoc.monitor.m++;
+        }
+      }
+    }
+  }
+
+  const total    = dalamProses + sudahKeluar;
+  const compRate = total > 0 ? ((sudahKeluar/total)*100).toFixed(1) : '0.0';
+
+  let health = 100;
+  if (total > 0) {
+    health -= Math.round((overdue   / total) * 40);
+    health -= Math.round((critical  / total) * 20);
+    health -= Math.round((blindSpot / total) * 20);
+    health -= Math.round((locMissing/ total) * 20);
+  }
+  health = Math.max(0, Math.min(100, health));
+
+  return { overdue, critical, warning, monitor, dalamProses, sudahKeluar, total, compRate,
+           locFound, locMissing, blindSpot, todayCount, tomorrowCount,
+           riskLoc, slSummary, depotMap, ctypeMap, health };
+}
+
+// ─────────────────────────────────────────────
+// RENDER
+// ─────────────────────────────────────────────
+function render() {
+  const s = computeStats();
+  const hasData = s.total > 0;
+
+  document.getElementById('headerSub').textContent = hasData ? fmtNow() : 'Waiting for data...';
+  document.getElementById('hCompRate').textContent = hasData ? s.compRate+'%' : '—';
+
+  document.getElementById('kOverdue').textContent  = hasData ? s.overdue   : '—';
+  document.getElementById('kCritical').textContent = hasData ? s.critical  : '—';
+  document.getElementById('kWarning').textContent  = hasData ? s.warning   : '—';
+  document.getElementById('kMonitor').textContent  = hasData ? s.monitor   : '—';
+
+  document.getElementById('sDalamProses').textContent = hasData ? s.dalamProses : '—';
+  document.getElementById('sSudahKeluar').textContent = hasData ? s.sudahKeluar : '—';
+  document.getElementById('sTotal').textContent       = hasData ? s.total       : '—';
+  document.getElementById('sLocFound').textContent    = hasData ? s.locFound    : '—';
+  document.getElementById('sLocMissing').textContent  = hasData ? s.locMissing  : '—';
+  document.getElementById('sCompPct').textContent     = hasData ? s.compRate+'%': '—%';
+  document.getElementById('compBar').style.width      = hasData ? s.compRate+'%': '0%';
+
+  const hColor = s.health>=80 ? '#3B6D11' : s.health>=60 ? '#BA7517' : s.health>=40 ? '#854F0B' : '#A32D2D';
+  const hLabel = s.health>=80 ? 'Good'    : s.health>=60 ? 'Fair'    : s.health>=40 ? 'At risk' : 'Critical';
+  document.getElementById('healthBox').style.background = hasData ? hColor : '#ccc';
+  document.getElementById('healthNum').textContent      = hasData ? s.health : '—';
+  document.getElementById('healthLabel').textContent    = hasData ? hLabel   : '—';
+  document.getElementById('healthLabel').style.color    = hasData ? hColor   : 'var(--text3)';
+  document.getElementById('healthBar').style.background = hColor;
+  document.getElementById('healthBar').style.width      = hasData ? s.health+'%' : '0%';
+  document.getElementById('sBlindSpot').textContent = hasData ? s.blindSpot    : '—';
+  document.getElementById('sToday').textContent     = hasData ? s.todayCount   : '—';
+  document.getElementById('sTomorrow').textContent  = hasData ? s.tomorrowCount: '—';
+
+  // INSIGHTS
+  let ins = '';
+  if (hasData) {
+    if (s.blindSpot > 0)
+      ins += `<div class="insight insight-danger"><i class="ti ti-alert-triangle"></i><div><strong>${s.blindSpot} container${s.blindSpot>1?'s are':' is'} overdue/critical with unknown location</strong> — immediate tracing and depot coordination required.</div></div>`;
+    if (s.todayCount > 0)
+      ins += `<div class="insight insight-danger"><i class="ti ti-clock"></i><div><strong>${s.todayCount} container${s.todayCount>1?'s expire':'expires'} today</strong> — escalate to depot immediately.</div></div>`;
+    if (s.tomorrowCount > 0)
+      ins += `<div class="insight insight-warning"><i class="ti ti-calendar-event"></i><div><strong>${s.tomorrowCount} container${s.tomorrowCount>1?'s expire':' expires'} tomorrow</strong> — confirm redelivery plan today.</div></div>`;
+    if (s.overdue > 0 && s.blindSpot === 0)
+      ins += `<div class="insight insight-success"><i class="ti ti-check"></i><div>All overdue containers have known locations — coordinate urgent redelivery with depot.</div></div>`;
+    if (parseFloat(s.compRate) >= 70)
+      ins += `<div class="insight insight-success"><i class="ti ti-trending-up"></i><div>Completion rate is strong at <strong>${s.compRate}%</strong> — good progress this cycle.</div></div>`;
+    else if (parseFloat(s.compRate) < 40)
+      ins += `<div class="insight insight-warning"><i class="ti ti-chart-bar"></i><div>Completion rate is low at <strong>${s.compRate}%</strong> — review evacuation pipeline and depot capacity.</div></div>`;
+    if (!ins)
+      ins = `<div class="insight insight-success"><i class="ti ti-check"></i><div>No critical observations at this time. All containers are within normal operating range.</div></div>`;
+  } else {
+    ins = `<div class="insight insight-neutral"><i class="ti ti-loader-2"></i>Loading live data from Google Sheet...</div>`;
+  }
+  document.getElementById('insightsBody').innerHTML = ins;
+
+  // RISK LOCATION
+  const rl = s.riskLoc;
+  document.getElementById('riskLocBody').innerHTML = hasData ? `
+    <tr><td class="col-overdue" style="font-weight:600;">Overdue</td><td class="col-green">${rl.overdue.f}</td><td class="col-red">${rl.overdue.m}</td></tr>
+    <tr><td class="col-critical" style="font-weight:600;">Critical</td><td class="col-green">${rl.critical.f}</td><td class="col-red">${rl.critical.m}</td></tr>
+    <tr><td class="col-warning" style="font-weight:600;">Warning</td><td class="col-green">${rl.warning.f}</td><td class="col-red">${rl.warning.m}</td></tr>
+    <tr><td class="col-monitor" style="font-weight:600;">Monitor</td><td class="col-green">${rl.monitor.f}</td><td class="col-red">${rl.monitor.m}</td></tr>
+  ` : '<tr><td colspan="3" class="tbl-empty">Loading...</td></tr>';
+
+  // CONTAINER TYPES
+  let ctRows = '';
+  Object.entries(s.ctypeMap).sort((a,b)=>(parseInt(a[0])||0)-(parseInt(b[0])||0)).forEach(([t,v])=>{
+    ctRows += `<tr><td>${t}</td><td>${v.total}</td><td class="col-green">${v.f}</td><td class="col-red">${v.m}</td></tr>`;
+  });
+  document.getElementById('ctypeBody').innerHTML = ctRows || '<tr><td colspan="4" class="tbl-empty">—</td></tr>';
+
+  // SHIPPING LINE
+  let slRows = '';
+  Object.entries(s.slSummary).forEach(([ln,v])=>{
+    const comp = v.total>0 ? (v.sudahKeluar/v.total*100).toFixed(1) : '0.0';
+    const bc   = parseFloat(comp)>=70 ? 'badge-good' : parseFloat(comp)>=40 ? 'badge-warning' : 'badge-critical';
+    slRows += `<tr>
+      <td style="font-weight:600;">${ln}</td><td>${v.total}</td><td>${v.dalamProses}</td>
+      <td class="col-green">${v.sudahKeluar}</td><td class="col-overdue">${v.overdue}</td>
+      <td class="col-critical">${v.critical}</td><td class="col-warning">${v.warning}</td>
+      <td class="col-monitor">${v.monitor}</td><td><span class="badge ${bc}">${comp}%</span></td>
+    </tr>`;
+  });
+  document.getElementById('shippingLineBody').innerHTML = slRows || '<tr><td colspan="9" class="tbl-empty">No data</td></tr>';
+
+  // DEPOT
+  let depotRows = '';
+  Object.entries(s.depotMap).sort((a,b)=>b[1].dalamProses-a[1].dalamProses).forEach(([depot,v])=>{
+    depotRows += `<tr><td>${depot}</td><td>${v.total}</td><td>${v.dalamProses}</td><td class="col-green">${v.sudahKeluar}</td></tr>`;
+  });
+  document.getElementById('depotBody').innerHTML = depotRows || '<tr><td colspan="4" class="tbl-empty">No data</td></tr>';
+}
+
+// ─────────────────────────────────────────────
+// INIT — fetch on load, then every 5 minutes
+// ─────────────────────────────────────────────
+fetchAllData();
+setInterval(fetchAllData, REFRESH_INTERVAL_MS);
+</script>
+</body>
+</html>
