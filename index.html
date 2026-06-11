@@ -71,6 +71,11 @@ body { font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Arial,sans-serif;
 .op-fbtn.rf-warning.active  { background:var(--amber);  color:#fff; border-color:var(--amber); }
 .op-fbtn.rf-monitor.active  { background:var(--green);  color:#fff; border-color:var(--green); }
 
+.op-line-row { display:flex; align-items:center; gap:6px; padding:0 16px 8px; }
+.op-line-lbl { font-size:10px; letter-spacing:0.5px; text-transform:uppercase; color:var(--text3); margin-right:2px; white-space:nowrap; }
+.op-lbtn { font-size:12px; font-weight:600; font-family:inherit; padding:5px 16px; border-radius:100px; border:1px solid var(--border); background:var(--surface); color:var(--text2); cursor:pointer; transition:all 0.15s; }
+.op-lbtn.active { background:var(--navy-light); color:#fff; border-color:var(--navy-light); }
+
 .op-result-meta { padding:4px 16px 8px; font-size:11px; color:var(--text3); }
 
 .op-cards { padding:0 16px 24px; display:flex; flex-direction:column; gap:10px; }
@@ -270,6 +275,12 @@ tbody tr:hover td { background:var(--surface2); }
 .rfbtn.rf-critical.active { background:var(--orange); border-color:var(--orange); color:#fff; }
 .rfbtn.rf-warning.active  { background:var(--amber);  border-color:var(--amber);  color:#fff; }
 .rfbtn.rf-monitor.active  { background:var(--green);  border-color:var(--green);  color:#fff; }
+.rfbtn.rf-verified i { font-size:12px; vertical-align:-2px; }
+.rfbtn.rf-verified.active   { background:var(--green); border-color:var(--green); color:#fff; }
+.rfbtn.rf-unverified.active { background:var(--text2); border-color:var(--text2); color:#fff; }
+.rf-divider { width:1px; height:18px; background:var(--border); align-self:center; margin:0 2px; }
+.bo-verified-badge { display:inline-flex; align-items:center; gap:3px; padding:2px 9px; border-radius:100px; font-size:10px; font-weight:600; background:#eaf3de; color:#2d5e0a; white-space:nowrap; }
+.bo-verified-badge i { font-size:12px; }
 
 footer { text-align:center; font-size:11px; color:var(--text3); padding-top:20px; border-top:1px solid var(--border); }
 
@@ -342,6 +353,13 @@ footer { text-align:center; font-size:11px; color:var(--text3); padding-top:20px
     <button class="op-fbtn rf-warning"     id="opFWarning"  onclick="setOpFilter('warning')">Warning</button>
     <button class="op-fbtn rf-monitor"     id="opFMonitor"  onclick="setOpFilter('monitor')">Monitor</button>
     <button class="op-fbtn"               id="opFMissing"  onclick="setOpFilter('missing')" style="border-color:#f7c1c1;color:var(--red);">Missing location</button>
+  </div>
+
+  <div class="op-line-row">
+    <span class="op-line-lbl">Shipping line:</span>
+    <button class="op-lbtn active" id="opLAll" onclick="setOpLine('ALL')">All</button>
+    <button class="op-lbtn" id="opLMSL" onclick="setOpLine('MSL')">MSL</button>
+    <button class="op-lbtn" id="opLGSL" onclick="setOpLine('GSL')">GSL</button>
   </div>
 
   <div class="op-result-meta" id="opResultMeta"></div>
@@ -576,6 +594,9 @@ footer { text-align:center; font-size:11px; color:var(--text3); padding-top:20px
         <button class="rfbtn rf-critical" id="rfCritical" onclick="setDetailFilter('critical')">Critical</button>
         <button class="rfbtn rf-warning"  id="rfWarning"  onclick="setDetailFilter('warning')">Warning</button>
         <button class="rfbtn rf-monitor"  id="rfMonitor"  onclick="setDetailFilter('monitor')">Monitor</button>
+        <span class="rf-divider"></span>
+        <button class="rfbtn rf-verified"   id="rfVerified"   onclick="setVerifyFilter('verified')"><i class="ti ti-circle-check"></i> Verified</button>
+        <button class="rfbtn rf-unverified" id="rfUnverified" onclick="setVerifyFilter('unverified')">Not verified</button>
       </div>
       <input type="text" id="detailSearch" placeholder="Search container no, depot, location..." oninput="renderDetailTable()">
       <span class="detail-count" id="detailCount"></span>
@@ -583,9 +604,9 @@ footer { text-align:center; font-size:11px; color:var(--text3); padding-top:20px
     <div class="tbl-wrap"><table>
       <thead><tr>
         <th style="text-align:left;">Container No</th>
-        <th>Line</th><th>Type</th><th>Depot</th><th>Req Date</th><th>Days Left</th><th>Risk</th><th>Location</th>
+        <th>Line</th><th>Type</th><th>Depot</th><th>Req Date</th><th>Days Left</th><th>Risk</th><th>Location</th><th>Status by OPS</th>
       </tr></thead>
-      <tbody id="detailBody"><tr><td colspan="8" class="tbl-empty">Loading...</td></tr></tbody>
+      <tbody id="detailBody"><tr><td colspan="9" class="tbl-empty">Loading...</td></tr></tbody>
     </table></div>
   </div>
 
@@ -661,7 +682,7 @@ const MONTHS   = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','N
 
 const state = {
   MSL:[], GSL:[], filter:'ALL',
-  detailFilter:'all', opFilter:'all',
+  detailFilter:'all', opFilter:'all', verifyFilter:'all', opLine:'ALL',
   dateMode:'all', dateFrom:null, dateTo:null
 };
 
@@ -690,9 +711,19 @@ function applyCustomDate(){const f=document.getElementById('dateFrom').value,t=d
 function updateDateBadge(){const badge=document.getElementById('dateBadge');if(!badge)return;const range=getDateRange();if(!range){badge.textContent='Showing all dates';return;}const fmt=d=>d?d.getDate()+' '+MONTHS[d.getMonth()]+' '+d.getFullYear():'—';if(range.from&&range.to)badge.textContent=fmt(range.from)+' → '+fmt(range.to);else if(range.from)badge.textContent='From '+fmt(range.from);else badge.textContent='Up to '+fmt(range.to);}
 
 // ── FETCH ─────────────────────────────────────────────
-function gvizUrl(name){return'https://docs.google.com/spreadsheets/d/'+SHEET_ID+'/gviz/tq?tqx=out:json&sheet='+encodeURIComponent(name);}
-function parseGviz(raw){const json=JSON.parse(raw.replace(/^[^{]*/,'').replace(/\);?\s*$/,''));return json.table.rows.map(r=>r.c.map(cell=>{if(!cell||cell.v===null||cell.v===undefined)return null;if(typeof cell.v==='string'&&cell.v.startsWith('Date('))return cell.f||cell.v;return cell.v;}));}
-async function fetchSheet(name){const res=await fetch(gvizUrl(name));if(!res.ok)throw new Error('HTTP '+res.status);return parseGviz(await res.text());}
+function gvizUrl(name){return'https://docs.google.com/spreadsheets/d/'+SHEET_ID+'/gviz/tq?tqx=out:json&sheet='+encodeURIComponent(name)+'&_='+Date.now();}
+function parseGviz(raw){
+  const m=raw.match(/{[\s\S]*}/);
+  if(!m)throw new Error('Unexpected response from Google Sheets');
+  const json=JSON.parse(m[0]);
+  if(json.status==='error'){
+    const msg=(json.errors&&json.errors[0]&&(json.errors[0].detailed_message||json.errors[0].message))||'Sheet query error';
+    throw new Error(msg);
+  }
+  if(!json.table||!json.table.rows)throw new Error('No table data returned');
+  return json.table.rows.map(r=>(r.c||[]).map(cell=>{if(!cell||cell.v===null||cell.v===undefined)return null;if(typeof cell.v==='string'&&cell.v.startsWith('Date('))return cell.f||cell.v;return cell.v;}));
+}
+async function fetchSheet(name){const res=await fetch(gvizUrl(name),{cache:'no-store'});if(!res.ok)throw new Error('HTTP '+res.status);return parseGviz(await res.text());}
 
 function setStatus(type,msg){
   const pi=document.getElementById('statusPill'),si=document.getElementById('statusIcon'),st=document.getElementById('statusText');
@@ -707,17 +738,34 @@ function setStatus(type,msg){
   }
 }
 
+const sleep=ms=>new Promise(r=>setTimeout(r,ms));
 async function fetchAllData(){
   setStatus('loading','Refreshing data...');
-  try {
-    const [msl,gsl]=await Promise.all([fetchSheet(SHEETS.MSL),fetchSheet(SHEETS.GSL)]);
-    state.MSL=msl.slice(1).filter(r=>r[2]);
-    state.GSL=gsl.slice(1).filter(r=>r[2]);
-    setStatus('ok','Live \u00b7 Last synced '+fmtNow());
-    const ft=document.getElementById('footerTime');if(ft)ft.textContent=fmtNow();
+  let msl=null,gsl=null,lastErr=null;
+  // Retry up to 3 times — gviz can return transient errors right after
+  // the sheet was written to (e.g. by the verify endpoint)
+  for(let attempt=1;attempt<=3;attempt++){
+    try{
+      [msl,gsl]=await Promise.all([fetchSheet(SHEETS.MSL),fetchSheet(SHEETS.GSL)]);
+      lastErr=null;break;
+    }catch(e){
+      lastErr=e;
+      console.warn('Sync attempt '+attempt+' failed:',e);
+      if(attempt<3)await sleep(1200*attempt);
+    }
+  }
+  if(lastErr){setStatus('error','Could not load sheet. '+lastErr.message);return;}
+  state.MSL=msl.slice(1).filter(r=>r[2]);
+  state.GSL=gsl.slice(1).filter(r=>r[2]);
+  setStatus('ok','Live \u00b7 Last synced '+fmtNow());
+  const ft=document.getElementById('footerTime');if(ft)ft.textContent=fmtNow();
+  try{
     updateDateBadge();
     render();
-  } catch(e){setStatus('error','Could not load sheet. '+e.message);}
+  }catch(e){
+    console.error('Render error:',e);
+    setStatus('error','Data loaded but display failed: '+e.message);
+  }
 }
 function applyFilter(){state.filter=document.getElementById('lineFilter').value;render();}
 function getRisk(d){if(d<0)return'overdue';if(d<=3)return'critical';if(d<=5)return'warning';if(d<=7)return'monitor';return null;}
@@ -765,6 +813,13 @@ function setOpFilter(f){
   renderOpCards();
 }
 function toggleOpFilter(f){setOpFilter(state.opFilter===f?'all':f);}
+function setOpLine(ln){
+  state.opLine=ln;
+  ['opLAll','opLMSL','opLGSL'].forEach(id=>{const el=document.getElementById(id);if(el)el.classList.remove('active');});
+  const map={ALL:'opLAll',MSL:'opLMSL',GSL:'opLGSL'};
+  const el=document.getElementById(map[ln]);if(el)el.classList.add('active');
+  renderOpCards();
+}
 function clearOpSearch(){document.getElementById('opSearch').value='';document.getElementById('opSearchClear').style.display='none';renderOpCards();}
 
 function renderOpCards(){
@@ -796,6 +851,7 @@ function renderOpCards(){
   }
 
   let filtered=rows;
+  if(state.opLine!=='ALL')filtered=filtered.filter(r=>r.ln===state.opLine);
   const f=state.opFilter;
   if(f==='missing') filtered=filtered.filter(r=>!r.isFound);
   else if(f!=='all') filtered=filtered.filter(r=>r.risk===f);
@@ -1032,7 +1088,7 @@ function getDetailRows(){
       const dl=Number(row[13]),risk=getRisk(dl);if(!risk)continue;
       const reqDateParsed=parseReqDate(String(row[11]||''));
       const reqDateFmt=reqDateParsed?reqDateParsed.getDate()+' '+MONTHS[reqDateParsed.getMonth()]+' '+reqDateParsed.getFullYear():(row[11]||'—');
-      rows.push({ln,containerNo,dl,risk,location:String(row[15]||'').trim()||'—',depot:String(row[9]||'').trim()||'—',ctype:String(row[18]||'').trim()||'—',reqDate:reqDateFmt});
+      rows.push({ln,containerNo,dl,risk,location:String(row[15]||'').trim()||'—',depot:String(row[9]||'').trim()||'—',ctype:String(row[18]||'').trim()||'—',reqDate:reqDateFmt,verified:String(row[20]||'').trim().toLowerCase()==='verified'});
     }
   }
   return rows;
@@ -1042,6 +1098,8 @@ function renderDetailTable(){
   const search=(document.getElementById('detailSearch').value||'').toLowerCase().trim();
   let rows=getDetailRows();
   if(state.detailFilter!=='all')rows=rows.filter(r=>r.risk===state.detailFilter);
+  if(state.verifyFilter==='verified')rows=rows.filter(r=>r.verified);
+  else if(state.verifyFilter==='unverified')rows=rows.filter(r=>!r.verified);
   if(search)rows=rows.filter(r=>r.containerNo.toLowerCase().includes(search)||r.depot.toLowerCase().includes(search)||r.location.toLowerCase().includes(search)||r.ctype.toLowerCase().includes(search)||r.ln.toLowerCase().includes(search));
   const order={overdue:0,critical:1,warning:2,monitor:3};
   rows.sort((a,b)=>order[a.risk]-order[b.risk]||a.dl-b.dl);
@@ -1050,15 +1108,25 @@ function renderDetailTable(){
   const locStyle=r=>r.location==='Missing location'||r.location==='—'?'color:var(--red);':'';
   const daysStyle=r=>r.dl<0?'color:var(--red);font-weight:700;':r.dl<=3?'color:var(--orange);font-weight:600;':r.dl<=5?'color:var(--amber);font-weight:600;':'';
   const daysLabel=r=>r.dl<0?r.dl+' days':r.dl===0?'Today':r.dl===1?'Tomorrow':r.dl+' days';
+  const verifyCell=r=>r.verified?'<span class="bo-verified-badge"><i class="ti ti-circle-check-filled"></i> Verified</span>':'<span style="color:var(--text3);">—</span>';
   const db=document.getElementById('detailBody');
   if(!db)return;
-  if(rows.length===0){db.innerHTML='<tr><td colspan="8" class="tbl-empty">No containers match this filter.</td></tr>';return;}
-  db.innerHTML=rows.map(r=>`<tr><td style="font-family:monospace;font-size:12px;">${r.containerNo}</td><td>${r.ln}</td><td>${r.ctype}</td><td>${r.depot}</td><td style="color:var(--text3);">${r.reqDate}</td><td style="${daysStyle(r)}">${daysLabel(r)}</td><td>${rb[r.risk]}</td><td style="${locStyle(r)}">${r.location}</td></tr>`).join('');
+  if(rows.length===0){db.innerHTML='<tr><td colspan="9" class="tbl-empty">No containers match this filter.</td></tr>';return;}
+  db.innerHTML=rows.map(r=>`<tr><td style="font-family:monospace;font-size:12px;">${r.containerNo}</td><td>${r.ln}</td><td>${r.ctype}</td><td>${r.depot}</td><td style="color:var(--text3);">${r.reqDate}</td><td style="${daysStyle(r)}">${daysLabel(r)}</td><td>${rb[r.risk]}</td><td style="${locStyle(r)}">${r.location}</td><td>${verifyCell(r)}</td></tr>`).join('');
+}
+
+function setVerifyFilter(f){
+  // Toggle: clicking the active chip again clears the filter
+  state.verifyFilter=state.verifyFilter===f?'all':f;
+  const v=document.getElementById('rfVerified'),u=document.getElementById('rfUnverified');
+  if(v)v.classList.toggle('active',state.verifyFilter==='verified');
+  if(u)u.classList.toggle('active',state.verifyFilter==='unverified');
+  renderDetailTable();
 }
 
 // ── EXPORT ────────────────────────────────────────────
 function buildExportData(){const lines=getLines(),range=getDateRange(),header=['Shipping Line','Container No','Type','Depot','Req Date','Days Left','Risk','Status','Location'],data=[header];for(const ln of lines){for(const row of(state[ln]||[])){const c=String(row[2]||'').trim();if(!c||!rowInDateRange(row,range))continue;const dl=Number(row[13]),st=String(row[14]||'').trim(),risk=st==='Sudah keluar'?'Completed':(getRisk(dl)||'OK');data.push([ln,c,String(row[18]||'').trim()||'—',String(row[9]||'').trim()||'—',String(row[11]||'').trim()||'—',dl,risk,st,String(row[15]||'').trim()||'—']);}}return data;}
-function buildDetailExportData(){const search=(document.getElementById('detailSearch').value||'').toLowerCase().trim();let rows=getDetailRows();if(state.detailFilter!=='all')rows=rows.filter(r=>r.risk===state.detailFilter);if(search)rows=rows.filter(r=>r.containerNo.toLowerCase().includes(search)||r.depot.toLowerCase().includes(search)||r.location.toLowerCase().includes(search));const order={overdue:0,critical:1,warning:2,monitor:3};rows.sort((a,b)=>order[a.risk]-order[b.risk]||a.dl-b.dl);return[['Shipping Line','Container No','Type','Depot','Req Date','Days Left','Risk','Location'],...rows.map(r=>[r.ln,r.containerNo,r.ctype,r.depot,r.reqDate,r.dl,r.risk,r.location])];}
+function buildDetailExportData(){const search=(document.getElementById('detailSearch').value||'').toLowerCase().trim();let rows=getDetailRows();if(state.detailFilter!=='all')rows=rows.filter(r=>r.risk===state.detailFilter);if(state.verifyFilter==='verified')rows=rows.filter(r=>r.verified);else if(state.verifyFilter==='unverified')rows=rows.filter(r=>!r.verified);if(search)rows=rows.filter(r=>r.containerNo.toLowerCase().includes(search)||r.depot.toLowerCase().includes(search)||r.location.toLowerCase().includes(search));const order={overdue:0,critical:1,warning:2,monitor:3};rows.sort((a,b)=>order[a.risk]-order[b.risk]||a.dl-b.dl);return[['Shipping Line','Container No','Type','Depot','Req Date','Days Left','Risk','Location','Status by OPS'],...rows.map(r=>[r.ln,r.containerNo,r.ctype,r.depot,r.reqDate,r.dl,r.risk,r.location,r.verified?'Verified':''])];}
 function toCSV(data){return data.map(r=>r.map(v=>'"'+String(v).replace(/"/g,'""')+'"').join(',')).join('\n');}
 function downloadFile(content,filename,mime){const b=new Blob([content],{type:mime}),a=document.createElement('a');a.href=URL.createObjectURL(b);a.download=filename;a.click();URL.revokeObjectURL(a.href);}
 function dateStr(){const d=new Date();return d.getFullYear()+String(d.getMonth()+1).padStart(2,'0')+String(d.getDate()).padStart(2,'0');}
