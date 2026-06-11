@@ -111,6 +111,43 @@ body { font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Arial,sans-serif;
 .op-loading { text-align:center; padding:48px 24px; color:var(--text3); }
 .op-loading i { font-size:32px; display:block; margin-bottom:10px; opacity:0.5; }
 
+/* ── Verified chip on cards ── */
+.op-verified-chip { display:inline-flex; align-items:center; gap:3px; padding:4px 9px; border-radius:100px; font-size:10px; font-weight:700; background:#eaf3de; color:#2d5e0a; white-space:nowrap; }
+.op-verified-chip i { font-size:12px; }
+.op-card { cursor:pointer; transition:box-shadow 0.15s, transform 0.1s; }
+.op-card:active { transform:scale(0.985); }
+.op-card-tap { margin-top:10px; padding-top:8px; border-top:1px dashed var(--border); font-size:10px; color:var(--text3); display:flex; align-items:center; gap:4px; }
+.op-card-tap i { font-size:12px; }
+
+/* ── Container detail bottom sheet ── */
+.op-modal-overlay { display:none; position:fixed; inset:0; background:rgba(15,25,40,0.55); z-index:500; align-items:flex-end; justify-content:center; }
+.op-modal-overlay.open { display:flex; }
+.op-modal { background:var(--surface); width:100%; max-width:520px; border-radius:16px 16px 0 0; padding:10px 18px calc(18px + env(safe-area-inset-bottom)); animation:slideUp 0.22s ease-out; max-height:88vh; overflow-y:auto; }
+@keyframes slideUp { from{transform:translateY(40px);opacity:0;} to{transform:translateY(0);opacity:1;} }
+.op-modal-grab { width:38px; height:4px; border-radius:100px; background:var(--border); margin:0 auto 12px; }
+.op-modal-header { display:flex; align-items:flex-start; justify-content:space-between; margin-bottom:14px; }
+.op-modal-no { font-size:20px; font-weight:700; font-family:monospace; letter-spacing:1px; color:var(--navy); }
+.op-modal-line { font-size:11px; color:var(--text2); margin-top:2px; }
+.op-modal-close { background:var(--surface2); border:1px solid var(--border); border-radius:100px; width:32px; height:32px; display:flex; align-items:center; justify-content:center; cursor:pointer; color:var(--text2); font-size:16px; flex-shrink:0; }
+.op-modal-body { display:grid; grid-template-columns:1fr 1fr; gap:8px; margin-bottom:16px; }
+.op-modal-footer { border-top:1px solid var(--border); padding-top:14px; }
+.op-verify-note { font-size:11px; color:var(--text2); display:flex; gap:6px; align-items:flex-start; margin-bottom:12px; line-height:1.45; }
+.op-verify-note i { font-size:14px; flex-shrink:0; margin-top:1px; color:var(--navy-light); }
+.op-verify-btn { width:100%; padding:14px; font-size:15px; font-weight:700; font-family:inherit; background:var(--green); color:#fff; border:none; border-radius:var(--radius-sm); cursor:pointer; display:flex; align-items:center; justify-content:center; gap:8px; transition:opacity 0.15s; }
+.op-verify-btn i { font-size:18px; }
+.op-verify-btn:active { opacity:0.85; }
+.op-verify-btn:disabled { opacity:0.6; cursor:wait; }
+.op-verified-done { width:100%; padding:14px; font-size:14px; font-weight:700; background:#eaf3de; color:#2d5e0a; border-radius:var(--radius-sm); display:flex; align-items:center; justify-content:center; gap:8px; }
+.op-verified-done i { font-size:18px; }
+.op-verify-err { font-size:12px; color:var(--red); margin-top:10px; min-height:0; text-align:center; }
+@keyframes spin { to{transform:rotate(360deg);} }
+.spin { animation:spin 0.8s linear infinite; display:inline-block; }
+
+/* ── Toast ── */
+.op-toast { position:fixed; bottom:24px; left:50%; transform:translateX(-50%) translateY(80px); background:var(--navy); color:#fff; font-size:13px; font-weight:600; padding:11px 20px; border-radius:100px; z-index:600; opacity:0; transition:transform 0.25s, opacity 0.25s; display:flex; align-items:center; gap:7px; white-space:nowrap; box-shadow:0 6px 20px rgba(0,0,0,0.25); pointer-events:none; }
+.op-toast.show { transform:translateX(-50%) translateY(0); opacity:1; }
+.op-toast i { font-size:16px; color:#9fd57a; }
+
 /* ══════════════════════════════════════════
    BACK OFFICE VIEW — desktop
 ══════════════════════════════════════════ */
@@ -311,6 +348,54 @@ footer { text-align:center; font-size:11px; color:var(--text3); padding-top:20px
   <div class="op-cards" id="opCards">
     <div class="op-loading"><i class="ti ti-loader-2"></i><p>Loading containers...</p></div>
   </div>
+
+  <!-- Container detail bottom sheet -->
+  <div class="op-modal-overlay" id="opModalOverlay" onclick="if(event.target===this)closeOpModal()">
+    <div class="op-modal" id="opModal">
+      <div class="op-modal-grab"></div>
+      <div class="op-modal-header">
+        <div>
+          <div class="op-modal-no" id="omContainerNo">—</div>
+          <div class="op-modal-line" id="omLine">—</div>
+        </div>
+        <button class="op-modal-close" onclick="closeOpModal()"><i class="ti ti-x"></i></button>
+      </div>
+      <div class="op-modal-body">
+        <div class="op-field span2">
+          <div class="op-field-lbl">Days left</div>
+          <div class="op-field-val" id="omDays">—</div>
+        </div>
+        <div class="op-field">
+          <div class="op-field-lbl">Type</div>
+          <div class="op-field-val" id="omType">—</div>
+        </div>
+        <div class="op-field">
+          <div class="op-field-lbl">Req date</div>
+          <div class="op-field-val" id="omReqDate">—</div>
+        </div>
+        <div class="op-field span2">
+          <div class="op-field-lbl">Depot</div>
+          <div class="op-field-val" id="omDepot">—</div>
+        </div>
+        <div class="op-field span2">
+          <div class="op-field-lbl">Last known location</div>
+          <div class="op-field-val" id="omLocation">—</div>
+        </div>
+      </div>
+      <div class="op-modal-footer">
+        <div class="op-verify-note"><i class="ti ti-info-circle"></i> Confirm the container is physically at the location shown above, then mark it verified.</div>
+        <button class="op-verify-btn" id="omVerifyBtn" onclick="verifyLocation()">
+          <i class="ti ti-circle-check"></i> Location Verified
+        </button>
+        <div class="op-verified-done" id="omVerifiedDone" style="display:none;">
+          <i class="ti ti-circle-check-filled"></i> Location verified — saved to sheet
+        </div>
+        <div class="op-verify-err" id="omVerifyErr"></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="op-toast" id="opToast"></div>
 </div>
 
 <!-- ══ BACK OFFICE VIEW ══ -->
@@ -570,6 +655,8 @@ if (saved==='1') {
 // ── CONFIG ────────────────────────────────────────────
 const SHEET_ID = '1VgyCWMtSnNknlL4SgE9Q5DvGj7cR7IBQNnUkL3kZCQU';
 const SHEETS   = { MSL:'Offhire MSL', GSL:'Offhire GSL' };
+// Apps Script Web App endpoint for "Location Verified" write-back (column U "Status by OPS")
+const VERIFY_WEBAPP_URL = 'https://script.google.com/macros/s/AKfycbzwSwRaOmbdRdzTSv0CyhZRWGlxbyB78v6KK-C_NyaxMSsH7UhYKLo1yEQ_CYFHuKc9CQ/exec';
 const MONTHS   = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
 
 const state = {
@@ -687,7 +774,9 @@ function renderOpCards(){
 
   const rows=[];
   for(const ln of['MSL','GSL']){
-    for(const row of(state[ln]||[])){
+    const lnRows=state[ln]||[];
+    for(let i=0;i<lnRows.length;i++){
+      const row=lnRows[i];
       const containerNo=String(row[2]||'').trim();
       if(!containerNo)continue;
       const status=String(row[14]||'').trim();
@@ -701,7 +790,8 @@ function renderOpCards(){
       const reqDateParsed=parseReqDate(String(reqDateRaw||''));
       const reqDateFmt=reqDateParsed?reqDateParsed.getDate()+' '+MONTHS[reqDateParsed.getMonth()]+' '+reqDateParsed.getFullYear():(reqDateRaw||'—');
       const isFound=location&&location!=='Missing location';
-      rows.push({ln,containerNo,dl,risk,location,depot,ctype,reqDate:reqDateFmt,isFound});
+      const verified=String(row[20]||'').trim().toLowerCase()==='verified';
+      rows.push({ln,idx:i,containerNo,dl,risk,location,depot,ctype,reqDate:reqDateFmt,isFound,verified});
     }
   }
 
@@ -737,10 +827,13 @@ function renderOpCards(){
   }
 
   container.innerHTML=filtered.map(r=>`
-    <div class="op-card risk-${r.risk}">
+    <div class="op-card risk-${r.risk}" onclick="openOpModal('${r.ln}',${r.idx})">
       <div class="op-card-header">
         <div class="op-container-no">${r.containerNo}</div>
-        ${riskBadgeHtml(r)}
+        <div style="display:flex;align-items:center;gap:6px;">
+          ${r.verified?'<span class="op-verified-chip"><i class="ti ti-circle-check-filled"></i> Verified</span>':''}
+          ${riskBadgeHtml(r)}
+        </div>
       </div>
       <div class="op-card-body">
         <div class="op-field">
@@ -764,6 +857,7 @@ function renderOpCards(){
           <div class="op-field-val" style="color:var(--text2);">${r.reqDate}</div>
         </div>
       </div>
+      <div class="op-card-tap"><i class="ti ti-hand-click"></i> Tap to view &amp; verify location</div>
     </div>`).join('');
 }
 
@@ -773,6 +867,117 @@ function renderOpKpis(){
   document.getElementById('opKCritical').textContent=s.critical;
   document.getElementById('opKWarning').textContent=s.warning;
   document.getElementById('opKMonitor').textContent=s.monitor;
+}
+
+// ── OPERATOR: CONTAINER DETAIL MODAL + VERIFY ─────────
+let opModalCurrent=null; // {ln, idx}
+
+function openOpModal(ln,idx){
+  const row=(state[ln]||[])[idx];
+  if(!row)return;
+
+  const containerNo=String(row[2]||'').trim();
+  opModalCurrent={ln,idx,containerNo};
+  const dl=Number(row[13]);
+  const location=String(row[15]||'').trim();
+  const depot=String(row[9]||'').trim()||'—';
+  const ctype=String(row[18]||'').trim()||'—';
+  const verified=String(row[20]||'').trim().toLowerCase()==='verified';
+  const reqDateParsed=parseReqDate(String(row[11]||''));
+  const reqDateFmt=reqDateParsed?reqDateParsed.getDate()+' '+MONTHS[reqDateParsed.getMonth()]+' '+reqDateParsed.getFullYear():(row[11]||'—');
+  const isFound=location&&location!=='Missing location';
+
+  document.getElementById('omContainerNo').textContent=containerNo;
+  document.getElementById('omLine').textContent='Shipping line: '+ln;
+  const daysTxt=dl<0?Math.abs(dl)+' day'+(Math.abs(dl)!==1?'s':'')+' overdue':dl===0?'Expires today':dl===1?'Expires tomorrow':'Expires in '+dl+' days';
+  const omDays=document.getElementById('omDays');
+  omDays.textContent=daysTxt;
+  omDays.style.color=dl<=3?'var(--red)':dl<=5?'var(--amber)':'var(--green)';
+  document.getElementById('omType').textContent=ctype;
+  document.getElementById('omReqDate').textContent=reqDateFmt;
+  document.getElementById('omDepot').textContent=depot;
+  const omLoc=document.getElementById('omLocation');
+  omLoc.textContent=isFound?location:'⚠ Missing location';
+  omLoc.className='op-field-val'+(isFound?'':' missing');
+
+  setVerifyUi(verified?'done':'idle');
+  document.getElementById('omVerifyErr').textContent='';
+  document.getElementById('opModalOverlay').classList.add('open');
+}
+
+function closeOpModal(){
+  document.getElementById('opModalOverlay').classList.remove('open');
+  opModalCurrent=null;
+}
+
+function setVerifyUi(mode){
+  const btn=document.getElementById('omVerifyBtn');
+  const done=document.getElementById('omVerifiedDone');
+  if(mode==='done'){
+    btn.style.display='none';
+    done.style.display='flex';
+  } else if(mode==='loading'){
+    btn.style.display='flex'; done.style.display='none';
+    btn.disabled=true;
+    btn.innerHTML='<i class="ti ti-loader-2 spin"></i> Saving to sheet...';
+  } else {
+    btn.style.display='flex'; done.style.display='none';
+    btn.disabled=false;
+    btn.innerHTML='<i class="ti ti-circle-check"></i> Location Verified';
+  }
+}
+
+async function verifyLocation(){
+  if(!opModalCurrent)return;
+  const {ln}=opModalCurrent;
+  let {idx}=opModalCurrent;
+  let row=(state[ln]||[])[idx];
+  // Guard: auto-refresh may have shifted row order while modal was open
+  if(!row||String(row[2]||'').trim()!==opModalCurrent.containerNo){
+    idx=(state[ln]||[]).findIndex(r=>String(r[2]||'').trim()===opModalCurrent.containerNo);
+    row=idx>=0?state[ln][idx]:null;
+  }
+  if(!row)return;
+  const containerNo=String(row[2]||'').trim();
+  const errEl=document.getElementById('omVerifyErr');
+  errEl.textContent='';
+
+  if(!VERIFY_WEBAPP_URL||VERIFY_WEBAPP_URL==='PASTE_YOUR_WEBAPP_URL_HERE'){
+    errEl.textContent='Web App URL is not configured. Contact back office.';
+    return;
+  }
+
+  setVerifyUi('loading');
+  try{
+    // NOTE: body is sent without a JSON Content-Type header on purpose.
+    // This keeps it a CORS "simple request" (no preflight), which is
+    // required for Apps Script Web Apps to accept it from GitHub Pages.
+    const res=await fetch(VERIFY_WEBAPP_URL,{
+      method:'POST',
+      body:JSON.stringify({line:ln,containerNo:containerNo})
+    });
+    const data=await res.json();
+    if(!data.ok)throw new Error(data.error||'Update failed');
+
+    // Update local state so the UI reflects it immediately
+    row[20]='Verified';
+    setVerifyUi('done');
+    renderOpCards();
+    showOpToast(containerNo+' verified');
+  }catch(e){
+    setVerifyUi('idle');
+    errEl.textContent='Could not save: '+e.message+'. Check connection and try again.';
+  }
+}
+
+let opToastTimer=null;
+function showOpToast(msg){
+  const t=document.getElementById('opToast');
+  if(!t)return;
+  t.innerHTML='<i class="ti ti-circle-check-filled"></i> '+msg;
+  t.classList.add('show');
+  clearTimeout(opToastTimer);
+  opToastTimer=setTimeout(()=>t.classList.remove('show'),2600);
 }
 
 // ── BACK OFFICE CHARTS ────────────────────────────────
