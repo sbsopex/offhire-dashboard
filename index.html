@@ -142,17 +142,25 @@ body { font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Arial,sans-serif;
 .op-extra-lbl i { font-size:14px; color:var(--navy-light); }
 .op-optional { font-weight:500; text-transform:none; letter-spacing:0; color:var(--text3); }
 .op-loc-row { display:flex; gap:8px; }
-.op-loc-row input { flex:1; min-width:0; padding:11px 14px; font-size:14px; font-family:monospace; letter-spacing:1px; border:1.5px solid var(--border); border-radius:var(--radius-sm); background:var(--surface2); color:var(--text); text-transform:uppercase; }
+.op-loc-row input { flex:1; min-width:0; padding:11px 14px; font-size:14px; font-family:monospace; letter-spacing:1px; border:1.5px solid var(--border); border-radius:var(--radius-sm); background:var(--surface2); color:var(--text); text-transform:uppercase; transition:border-color 0.15s; }
 .op-loc-row input:focus { outline:none; border-color:var(--navy-light); background:#fff; }
-.op-loc-save { padding:11px 20px; font-size:13px; font-weight:700; font-family:inherit; background:var(--navy-light); color:#fff; border:none; border-radius:var(--radius-sm); cursor:pointer; white-space:nowrap; transition:opacity 0.15s; }
-.op-loc-save:active { opacity:0.85; }
-.op-loc-save:disabled { opacity:0.6; cursor:wait; }
+.op-loc-row input.loc-valid   { border-color:var(--green);  background:#f7fbf2; }
+.op-loc-row input.loc-invalid { border-color:var(--red);    background:#fff7f7; }
+.op-loc-err { font-size:11px; color:var(--red); margin-top:5px; min-height:0; }
 .op-photo-block { display:flex; align-items:center; gap:10px; flex-wrap:wrap; }
 .op-photo-block img { width:84px; height:84px; object-fit:cover; border-radius:var(--radius-sm); border:1.5px solid var(--border); display:block; background:var(--surface2); }
+.op-photo-pending { position:relative; }
+.op-photo-pending img { border-color:var(--amber); border-style:dashed; }
+.op-pending-badge { position:absolute; bottom:4px; left:4px; right:4px; text-align:center; font-size:8px; font-weight:700; letter-spacing:0.3px; text-transform:uppercase; background:rgba(186,117,23,0.92); color:#fff; border-radius:4px; padding:2px 3px; }
+.op-pending-cancel { position:absolute; top:-7px; right:-7px; width:22px; height:22px; border-radius:100px; background:var(--red); color:#fff; border:2px solid #fff; font-size:11px; display:flex; align-items:center; justify-content:center; cursor:pointer; padding:0; }
 .op-photo-btn { padding:11px 18px; font-size:13px; font-weight:600; font-family:inherit; background:var(--surface2); color:var(--text); border:1.5px dashed var(--border); border-radius:var(--radius-sm); cursor:pointer; display:flex; align-items:center; gap:7px; transition:all 0.15s; }
 .op-photo-btn i { font-size:17px; color:var(--navy-light); }
 .op-photo-btn:active { background:var(--border); }
 .op-photo-btn:disabled { opacity:0.6; cursor:wait; }
+.op-extra-save { width:100%; margin-top:14px; padding:12px; font-size:14px; font-weight:700; font-family:inherit; background:var(--navy-light); color:#fff; border:none; border-radius:var(--radius-sm); cursor:pointer; display:flex; align-items:center; justify-content:center; gap:7px; transition:opacity 0.15s; }
+.op-extra-save i { font-size:17px; }
+.op-extra-save:active { opacity:0.85; }
+.op-extra-save:disabled { opacity:0.55; cursor:not-allowed; }
 .op-modal-footer { border-top:1px solid var(--border); padding-top:14px; }
 .op-verify-note { font-size:11px; color:var(--text2); display:flex; gap:6px; align-items:flex-start; margin-bottom:12px; line-height:1.45; }
 .op-verify-note i { font-size:14px; flex-shrink:0; margin-top:1px; color:var(--navy-light); }
@@ -433,20 +441,29 @@ footer { text-align:center; font-size:11px; color:var(--text3); padding-top:20px
       <div class="op-extra">
         <div class="op-extra-lbl"><i class="ti ti-map-pin"></i> Actual found location <span class="op-optional">(optional)</span></div>
         <div class="op-loc-row">
-          <input type="text" id="omActualLoc" placeholder="e.g. A5.04.08" autocomplete="off" autocapitalize="characters">
-          <button class="op-loc-save" id="omLocSave" onclick="saveActualLocation()">Save</button>
+          <input type="text" id="omActualLoc" placeholder="e.g. A5.03.04" autocomplete="off" autocapitalize="characters" maxlength="9" oninput="onLocInput(this)">
         </div>
+        <div class="op-loc-err" id="omLocErr"></div>
 
         <div class="op-extra-lbl" style="margin-top:14px;"><i class="ti ti-camera"></i> Photo proof <span class="op-optional">(optional)</span></div>
         <div class="op-photo-block">
           <a id="omPhotoThumbWrap" href="#" target="_blank" rel="noopener" style="display:none;">
             <img id="omPhotoThumb" alt="Container photo">
           </a>
+          <div class="op-photo-pending" id="omPhotoPending" style="display:none;">
+            <img id="omPhotoPendingImg" alt="New photo">
+            <span class="op-pending-badge">Not saved yet</span>
+            <button class="op-pending-cancel" onclick="cancelPendingPhoto()" title="Remove"><i class="ti ti-x"></i></button>
+          </div>
           <button class="op-photo-btn" id="omPhotoBtn" onclick="document.getElementById('omPhotoInput').click()">
             <i class="ti ti-camera-plus"></i> Add photo
           </button>
-          <input type="file" id="omPhotoInput" accept="image/*" capture="environment" style="display:none;" onchange="uploadPhoto(this)">
+          <input type="file" id="omPhotoInput" accept="image/*" capture="environment" style="display:none;" onchange="photoSelected(this)">
         </div>
+
+        <button class="op-extra-save" id="omExtraSave" onclick="saveExtras()">
+          <i class="ti ti-device-floppy"></i> Save location &amp; photo
+        </button>
       </div>
 
       <div class="op-modal-footer">
@@ -1052,12 +1069,16 @@ function openOpModal(ln,idx){
   // Actual location (col V) + photo (col W)
   const locInput=document.getElementById('omActualLoc');
   locInput.value=String(row[21]||'').trim();
-  const saveBtn=document.getElementById('omLocSave');
-  saveBtn.disabled=false;saveBtn.textContent='Save';
+  locInput.classList.remove('loc-valid','loc-invalid');
+  document.getElementById('omLocErr').textContent='';
+  cancelPendingPhoto();
   setModalPhoto(String(row[22]||'').trim());
   const pBtn=document.getElementById('omPhotoBtn');
   pBtn.disabled=false;
   document.getElementById('omPhotoInput').value='';
+  const sBtn=document.getElementById('omExtraSave');
+  sBtn.disabled=false;
+  sBtn.innerHTML='<i class="ti ti-device-floppy"></i> Save location &amp; photo';
 
   document.getElementById('opModalOverlay').classList.add('open');
 }
@@ -1085,6 +1106,7 @@ function setModalPhoto(url){
 }
 
 function closeOpModal(){
+  cancelPendingPhoto();
   document.getElementById('opModalOverlay').classList.remove('open');
   opModalCurrent=null;
 }
@@ -1135,15 +1157,7 @@ async function verifyLocation(action){
 
   setVerifyUi(action==='unverify'?'removing':'loading');
   try{
-    // NOTE: body is sent without a JSON Content-Type header on purpose.
-    // This keeps it a CORS "simple request" (no preflight), which is
-    // required for Apps Script Web Apps to accept it from GitHub Pages.
-    const res=await fetch(VERIFY_WEBAPP_URL,{
-      method:'POST',
-      body:JSON.stringify({line:ln,containerNo:containerNo,action:action})
-    });
-    const data=await res.json();
-    if(!data.ok)throw new Error(data.error||'Update failed');
+    await postToWebApp({line:ln,containerNo:containerNo,action:action});
 
     // Update local state + cache so the UI reflects it immediately,
     // even before the next full sheet sync
@@ -1175,8 +1189,18 @@ async function postToWebApp(payload){
   if(!VERIFY_WEBAPP_URL||VERIFY_WEBAPP_URL==='PASTE_YOUR_WEBAPP_URL_HERE'){
     throw new Error('Web App URL is not configured');
   }
-  const res=await fetch(VERIFY_WEBAPP_URL,{method:'POST',body:JSON.stringify(payload)});
-  const data=await res.json();
+  let res;
+  try{
+    res=await fetch(VERIFY_WEBAPP_URL,{method:'POST',body:JSON.stringify(payload)});
+  }catch(e){
+    // CORS-blocked redirect to a Google consent page lands here
+    throw new Error('Cannot reach update service. The Apps Script likely needs re-authorization (run testSetup in the script editor, then redeploy as New version)');
+  }
+  let data;
+  try{data=await res.json();}
+  catch(e){
+    throw new Error('Update service returned an unexpected response. Open the Web App /exec URL in a browser \u2014 it should show JSON, not a sign-in page');
+  }
   if(!data.ok)throw new Error(data.error||'Update failed');
   return data;
 }
@@ -1195,28 +1219,124 @@ function resolveModalRow(){
   return row;
 }
 
-async function saveActualLocation(){
+// ── ACTUAL LOCATION FORMAT ────────────────────────────
+// Required yard format: letter + bay + . + row + . + tier
+// e.g. A5.03.04 or D1.15.01
+const LOC_RE=/^[A-Z]\d{1,2}\.\d{2}\.\d{2}$/;
+
+function onLocInput(input){
+  // Allow only letters, digits and dots while typing; force uppercase
+  const cleaned=input.value.toUpperCase().replace(/[^A-Z0-9.]/g,'');
+  if(cleaned!==input.value)input.value=cleaned;
+  const errEl=document.getElementById('omLocErr');
+  if(!cleaned){
+    input.classList.remove('loc-valid','loc-invalid');
+    errEl.textContent='';
+  }else if(LOC_RE.test(cleaned)){
+    input.classList.add('loc-valid');
+    input.classList.remove('loc-invalid');
+    errEl.textContent='';
+  }else{
+    input.classList.add('loc-invalid');
+    input.classList.remove('loc-valid');
+    errEl.textContent='Format must be like A5.03.04 (block + . + row + . + tier)';
+  }
+}
+
+// ── PENDING PHOTO (selected but not yet saved) ────────
+let pendingPhotoFile=null;
+
+function photoSelected(input){
+  const file=input.files&&input.files[0];
+  if(!file)return;
+  pendingPhotoFile=file;
+  const pend=document.getElementById('omPhotoPending');
+  const img=document.getElementById('omPhotoPendingImg');
+  if(img.dataset.objUrl)URL.revokeObjectURL(img.dataset.objUrl);
+  const objUrl=URL.createObjectURL(file);
+  img.src=objUrl;
+  img.dataset.objUrl=objUrl;
+  pend.style.display='block';
+  document.getElementById('omPhotoBtn').innerHTML='<i class="ti ti-camera-plus"></i> Change photo';
+}
+
+function cancelPendingPhoto(){
+  pendingPhotoFile=null;
+  const pend=document.getElementById('omPhotoPending');
+  const img=document.getElementById('omPhotoPendingImg');
+  if(img&&img.dataset.objUrl){URL.revokeObjectURL(img.dataset.objUrl);delete img.dataset.objUrl;}
+  if(img)img.src='';
+  if(pend)pend.style.display='none';
+  const inp=document.getElementById('omPhotoInput');
+  if(inp)inp.value='';
+  // Restore correct photo-button label based on whether a saved photo exists
+  const row=opModalCurrent?resolveModalRow():null;
+  const hasSaved=row&&String(row[22]||'').trim();
+  const btn=document.getElementById('omPhotoBtn');
+  if(btn)btn.innerHTML='<i class="ti ti-camera-plus"></i> '+(hasSaved?'Replace photo':'Add photo');
+}
+
+// ── UNIFIED SAVE (location and/or photo) ──────────────
+async function saveExtras(){
   const row=resolveModalRow();
   if(!row)return;
   const {ln,containerNo}=opModalCurrent;
   const input=document.getElementById('omActualLoc');
-  const btn=document.getElementById('omLocSave');
   const errEl=document.getElementById('omVerifyErr');
+  const locErrEl=document.getElementById('omLocErr');
+  const btn=document.getElementById('omExtraSave');
   errEl.textContent='';
-  const loc=input.value.toUpperCase().trim();
-  input.value=loc;
 
-  btn.disabled=true;btn.textContent='Saving...';
+  const loc=input.value.toUpperCase().trim();
+  const currentLoc=String(row[21]||'').trim();
+  const locChanged=loc!==currentLoc;
+
+  // Validate format strictly — empty is allowed (means clear/skip)
+  if(loc&&!LOC_RE.test(loc)){
+    onLocInput(input);
+    locErrEl.textContent='Format must be like A5.03.04 — fix the location before saving.';
+    input.focus();
+    return;
+  }
+
+  const doLoc=locChanged;             // save/clear location only if it changed
+  const doPhoto=!!pendingPhotoFile;   // upload only if a new photo was chosen
+  if(!doLoc&&!doPhoto){
+    showOpToast('Nothing new to save');
+    return;
+  }
+
+  btn.disabled=true;
+  document.getElementById('omPhotoBtn').disabled=true;
+  const saved=[];
   try{
-    await postToWebApp({line:ln,containerNo:containerNo,action:'setLocation',actualLocation:loc});
-    row[21]=loc;
+    if(doLoc){
+      btn.innerHTML='<i class="ti ti-loader-2 spin"></i> Saving location...';
+      await postToWebApp({line:ln,containerNo:containerNo,action:'setLocation',actualLocation:loc});
+      row[21]=loc;
+      saved.push(loc?('location '+loc):'location cleared');
+    }
+    if(doPhoto){
+      btn.innerHTML='<i class="ti ti-loader-2 spin"></i> Uploading photo...';
+      const b64=await compressImage(pendingPhotoFile);
+      const data=await postToWebApp({line:ln,containerNo:containerNo,action:'uploadPhoto',imageBase64:b64,mimeType:'image/jpeg'});
+      row[22]=data.photoUrl;
+      cancelPendingPhoto();
+      setModalPhoto(data.photoUrl);
+      saved.push('photo');
+    }
     saveDataCache();
     renderOpCards();
-    btn.disabled=false;btn.textContent='Save';
-    showOpToast(loc?('Location '+loc+' saved'):'Actual location cleared');
+    showOpToast(containerNo+': '+saved.join(' + ')+' saved');
+    btn.innerHTML='<i class="ti ti-check"></i> Saved';
+    setTimeout(()=>{btn.disabled=false;btn.innerHTML='<i class="ti ti-device-floppy"></i> Save location &amp; photo';},1400);
   }catch(e){
-    btn.disabled=false;btn.textContent='Save';
-    errEl.textContent='Could not save location: '+e.message;
+    btn.disabled=false;
+    btn.innerHTML='<i class="ti ti-device-floppy"></i> Save location &amp; photo';
+    // Report partial success so the operator knows what went through
+    errEl.textContent=(saved.length?('Saved '+saved.join(' + ')+', but the rest failed: '):'Could not save: ')+e.message;
+  }finally{
+    document.getElementById('omPhotoBtn').disabled=false;
   }
 }
 
@@ -1243,35 +1363,6 @@ function compressImage(file){
     };
     reader.readAsDataURL(file);
   });
-}
-
-async function uploadPhoto(input){
-  const file=input.files&&input.files[0];
-  if(!file)return;
-  const row=resolveModalRow();
-  if(!row){input.value='';return;}
-  const {ln,containerNo}=opModalCurrent;
-  const btn=document.getElementById('omPhotoBtn');
-  const errEl=document.getElementById('omVerifyErr');
-  errEl.textContent='';
-
-  btn.disabled=true;
-  btn.innerHTML='<i class="ti ti-loader-2 spin"></i> Uploading...';
-  try{
-    const b64=await compressImage(file);
-    const data=await postToWebApp({line:ln,containerNo:containerNo,action:'uploadPhoto',imageBase64:b64,mimeType:'image/jpeg'});
-    row[22]=data.photoUrl;
-    saveDataCache();
-    setModalPhoto(data.photoUrl);
-    renderOpCards();
-    showOpToast('Photo uploaded for '+containerNo);
-  }catch(e){
-    setModalPhoto(String(row[22]||'').trim());
-    errEl.textContent='Could not upload photo: '+e.message;
-  }finally{
-    btn.disabled=false;
-    input.value='';
-  }
 }
 
 // ── BACK OFFICE CHARTS ────────────────────────────────
