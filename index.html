@@ -135,6 +135,24 @@ body { font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Arial,sans-serif;
 .op-modal-line { font-size:11px; color:var(--text2); margin-top:2px; }
 .op-modal-close { background:var(--surface2); border:1px solid var(--border); border-radius:100px; width:32px; height:32px; display:flex; align-items:center; justify-content:center; cursor:pointer; color:var(--text2); font-size:16px; flex-shrink:0; }
 .op-modal-body { display:grid; grid-template-columns:1fr 1fr; gap:8px; margin-bottom:16px; }
+
+/* ── Actual location + photo section ── */
+.op-extra { border-top:1px solid var(--border); padding-top:14px; margin-bottom:16px; }
+.op-extra-lbl { font-size:11px; font-weight:700; letter-spacing:0.5px; text-transform:uppercase; color:var(--text2); display:flex; align-items:center; gap:5px; margin-bottom:8px; }
+.op-extra-lbl i { font-size:14px; color:var(--navy-light); }
+.op-optional { font-weight:500; text-transform:none; letter-spacing:0; color:var(--text3); }
+.op-loc-row { display:flex; gap:8px; }
+.op-loc-row input { flex:1; min-width:0; padding:11px 14px; font-size:14px; font-family:monospace; letter-spacing:1px; border:1.5px solid var(--border); border-radius:var(--radius-sm); background:var(--surface2); color:var(--text); text-transform:uppercase; }
+.op-loc-row input:focus { outline:none; border-color:var(--navy-light); background:#fff; }
+.op-loc-save { padding:11px 20px; font-size:13px; font-weight:700; font-family:inherit; background:var(--navy-light); color:#fff; border:none; border-radius:var(--radius-sm); cursor:pointer; white-space:nowrap; transition:opacity 0.15s; }
+.op-loc-save:active { opacity:0.85; }
+.op-loc-save:disabled { opacity:0.6; cursor:wait; }
+.op-photo-block { display:flex; align-items:center; gap:10px; flex-wrap:wrap; }
+.op-photo-block img { width:84px; height:84px; object-fit:cover; border-radius:var(--radius-sm); border:1.5px solid var(--border); display:block; background:var(--surface2); }
+.op-photo-btn { padding:11px 18px; font-size:13px; font-weight:600; font-family:inherit; background:var(--surface2); color:var(--text); border:1.5px dashed var(--border); border-radius:var(--radius-sm); cursor:pointer; display:flex; align-items:center; gap:7px; transition:all 0.15s; }
+.op-photo-btn i { font-size:17px; color:var(--navy-light); }
+.op-photo-btn:active { background:var(--border); }
+.op-photo-btn:disabled { opacity:0.6; cursor:wait; }
 .op-modal-footer { border-top:1px solid var(--border); padding-top:14px; }
 .op-verify-note { font-size:11px; color:var(--text2); display:flex; gap:6px; align-items:flex-start; margin-bottom:12px; line-height:1.45; }
 .op-verify-note i { font-size:14px; flex-shrink:0; margin-top:1px; color:var(--navy-light); }
@@ -284,6 +302,14 @@ tbody tr:hover td { background:var(--surface2); }
 .rf-divider { width:1px; height:18px; background:var(--border); align-self:center; margin:0 2px; }
 .bo-verified-badge { display:inline-flex; align-items:center; gap:3px; padding:2px 9px; border-radius:100px; font-size:10px; font-weight:600; background:#eaf3de; color:#2d5e0a; white-space:nowrap; }
 .bo-verified-badge i { font-size:12px; }
+.bo-actual-loc { display:inline-flex; align-items:center; gap:3px; font-family:monospace; font-size:12px; font-weight:700; letter-spacing:0.5px; color:var(--navy); white-space:nowrap; }
+.bo-actual-loc i { font-size:13px; color:#3B6D11; }
+.bo-photo-link img { width:34px; height:34px; object-fit:cover; border-radius:6px; border:1px solid var(--border); display:block; }
+.op-actual-field { background:#f0f6e8 !important; border-radius:6px; }
+.op-actual-val { font-family:monospace; letter-spacing:1px; color:#2d5e0a !important; display:flex; align-items:center; gap:4px; }
+.op-actual-val i { font-size:14px; }
+.op-photo-chip { color:var(--navy-light) !important; display:flex; align-items:center; gap:4px; font-size:12px; }
+.op-photo-chip i { font-size:14px; }
 
 footer { text-align:center; font-size:11px; color:var(--text3); padding-top:20px; border-top:1px solid var(--border); }
 
@@ -403,6 +429,26 @@ footer { text-align:center; font-size:11px; color:var(--text3); padding-top:20px
           <div class="op-field-val" id="omLocation">—</div>
         </div>
       </div>
+
+      <div class="op-extra">
+        <div class="op-extra-lbl"><i class="ti ti-map-pin"></i> Actual found location <span class="op-optional">(optional)</span></div>
+        <div class="op-loc-row">
+          <input type="text" id="omActualLoc" placeholder="e.g. A5.04.08" autocomplete="off" autocapitalize="characters">
+          <button class="op-loc-save" id="omLocSave" onclick="saveActualLocation()">Save</button>
+        </div>
+
+        <div class="op-extra-lbl" style="margin-top:14px;"><i class="ti ti-camera"></i> Photo proof <span class="op-optional">(optional)</span></div>
+        <div class="op-photo-block">
+          <a id="omPhotoThumbWrap" href="#" target="_blank" rel="noopener" style="display:none;">
+            <img id="omPhotoThumb" alt="Container photo">
+          </a>
+          <button class="op-photo-btn" id="omPhotoBtn" onclick="document.getElementById('omPhotoInput').click()">
+            <i class="ti ti-camera-plus"></i> Add photo
+          </button>
+          <input type="file" id="omPhotoInput" accept="image/*" capture="environment" style="display:none;" onchange="uploadPhoto(this)">
+        </div>
+      </div>
+
       <div class="op-modal-footer">
         <div class="op-verify-note"><i class="ti ti-info-circle"></i> Confirm the container is physically at the location shown above, then mark it verified.</div>
         <button class="op-verify-btn" id="omVerifyBtn" onclick="verifyLocation('verify')">
@@ -607,9 +653,9 @@ footer { text-align:center; font-size:11px; color:var(--text3); padding-top:20px
     <div class="tbl-wrap"><table>
       <thead><tr>
         <th style="text-align:left;">Container No</th>
-        <th>Line</th><th>Type</th><th>Depot</th><th>Req Date</th><th>Days Left</th><th>Risk</th><th>Location</th><th>Status by OPS</th>
+        <th>Line</th><th>Type</th><th>Depot</th><th>Req Date</th><th>Days Left</th><th>Risk</th><th>Location</th><th>Actual Loc (OPS)</th><th>Photo</th><th>Status by OPS</th>
       </tr></thead>
-      <tbody id="detailBody"><tr><td colspan="9" class="tbl-empty">Loading...</td></tr></tbody>
+      <tbody id="detailBody"><tr><td colspan="11" class="tbl-empty">Loading...</td></tr></tbody>
     </table></div>
   </div>
 
@@ -879,7 +925,9 @@ function renderOpCards(){
       const reqDateFmt=reqDateParsed?reqDateParsed.getDate()+' '+MONTHS[reqDateParsed.getMonth()]+' '+reqDateParsed.getFullYear():(reqDateRaw||'—');
       const isFound=location&&location!=='Missing location';
       const verified=String(row[20]||'').trim().toLowerCase()==='verified';
-      rows.push({ln,idx:i,containerNo,dl,risk,location,depot,ctype,reqDate:reqDateFmt,isFound,verified});
+      const actualLoc=String(row[21]||'').trim();
+      const photo=String(row[22]||'').trim();
+      rows.push({ln,idx:i,containerNo,dl,risk,location,depot,ctype,reqDate:reqDateFmt,isFound,verified,actualLoc,photo});
     }
   }
 
@@ -892,6 +940,7 @@ function renderOpCards(){
     r.containerNo.toLowerCase().includes(search)||
     r.depot.toLowerCase().includes(search)||
     r.location.toLowerCase().includes(search)||
+    r.actualLoc.toLowerCase().includes(search)||
     r.ctype.toLowerCase().includes(search)
   );
   const order={overdue:0,critical:1,warning:2,monitor:3};
@@ -941,10 +990,18 @@ function renderOpCards(){
           <div class="op-field-lbl">Last known location</div>
           <div class="op-field-val ${r.isFound?'':'missing'}">${r.isFound?r.location:'⚠ Missing location'}</div>
         </div>
+        ${r.actualLoc?`<div class="op-field span2 op-actual-field">
+          <div class="op-field-lbl">Actual location (OPS)</div>
+          <div class="op-field-val op-actual-val"><i class="ti ti-map-pin-check"></i> ${r.actualLoc}</div>
+        </div>`:''}
         <div class="op-field">
           <div class="op-field-lbl">Req date</div>
           <div class="op-field-val" style="color:var(--text2);">${r.reqDate}</div>
         </div>
+        ${r.photo?`<div class="op-field">
+          <div class="op-field-lbl">Photo</div>
+          <div class="op-field-val op-photo-chip"><i class="ti ti-camera"></i> Attached</div>
+        </div>`:''}
       </div>
       <div class="op-card-tap"><i class="ti ti-hand-click"></i> Tap to view &amp; verify location</div>
     </div>`).join('');
@@ -991,7 +1048,40 @@ function openOpModal(ln,idx){
 
   setVerifyUi(verified?'done':'idle');
   document.getElementById('omVerifyErr').textContent='';
+
+  // Actual location (col V) + photo (col W)
+  const locInput=document.getElementById('omActualLoc');
+  locInput.value=String(row[21]||'').trim();
+  const saveBtn=document.getElementById('omLocSave');
+  saveBtn.disabled=false;saveBtn.textContent='Save';
+  setModalPhoto(String(row[22]||'').trim());
+  const pBtn=document.getElementById('omPhotoBtn');
+  pBtn.disabled=false;
+  document.getElementById('omPhotoInput').value='';
+
   document.getElementById('opModalOverlay').classList.add('open');
+}
+
+// Converts a Drive file URL to a displayable thumbnail URL
+function driveThumbUrl(url,size){
+  const m=String(url||'').match(/[-\w]{25,}/);
+  return m?('https://drive.google.com/thumbnail?id='+m[0]+'&sz=w'+(size||400)):'';
+}
+
+function setModalPhoto(url){
+  const wrap=document.getElementById('omPhotoThumbWrap');
+  const img=document.getElementById('omPhotoThumb');
+  const btn=document.getElementById('omPhotoBtn');
+  if(url){
+    wrap.href=url;
+    img.src=driveThumbUrl(url,400);
+    wrap.style.display='block';
+    btn.innerHTML='<i class="ti ti-camera-plus"></i> Replace photo';
+  }else{
+    wrap.style.display='none';
+    img.src='';
+    btn.innerHTML='<i class="ti ti-camera-plus"></i> Add photo';
+  }
 }
 
 function closeOpModal(){
@@ -1078,6 +1168,112 @@ function showOpToast(msg){
   opToastTimer=setTimeout(()=>t.classList.remove('show'),2600);
 }
 
+// ── ACTUAL LOCATION + PHOTO (columns V & W) ───────────
+// Shared POST helper. Body intentionally has no JSON Content-Type
+// header to stay a CORS "simple request" (no preflight).
+async function postToWebApp(payload){
+  if(!VERIFY_WEBAPP_URL||VERIFY_WEBAPP_URL==='PASTE_YOUR_WEBAPP_URL_HERE'){
+    throw new Error('Web App URL is not configured');
+  }
+  const res=await fetch(VERIFY_WEBAPP_URL,{method:'POST',body:JSON.stringify(payload)});
+  const data=await res.json();
+  if(!data.ok)throw new Error(data.error||'Update failed');
+  return data;
+}
+
+// Re-resolves the modal's row in case auto-refresh shifted indices
+function resolveModalRow(){
+  if(!opModalCurrent)return null;
+  const {ln}=opModalCurrent;
+  let row=(state[ln]||[])[opModalCurrent.idx];
+  if(!row||String(row[2]||'').trim()!==opModalCurrent.containerNo){
+    const idx=(state[ln]||[]).findIndex(r=>String(r[2]||'').trim()===opModalCurrent.containerNo);
+    if(idx<0)return null;
+    opModalCurrent.idx=idx;
+    row=state[ln][idx];
+  }
+  return row;
+}
+
+async function saveActualLocation(){
+  const row=resolveModalRow();
+  if(!row)return;
+  const {ln,containerNo}=opModalCurrent;
+  const input=document.getElementById('omActualLoc');
+  const btn=document.getElementById('omLocSave');
+  const errEl=document.getElementById('omVerifyErr');
+  errEl.textContent='';
+  const loc=input.value.toUpperCase().trim();
+  input.value=loc;
+
+  btn.disabled=true;btn.textContent='Saving...';
+  try{
+    await postToWebApp({line:ln,containerNo:containerNo,action:'setLocation',actualLocation:loc});
+    row[21]=loc;
+    saveDataCache();
+    renderOpCards();
+    btn.disabled=false;btn.textContent='Save';
+    showOpToast(loc?('Location '+loc+' saved'):'Actual location cleared');
+  }catch(e){
+    btn.disabled=false;btn.textContent='Save';
+    errEl.textContent='Could not save location: '+e.message;
+  }
+}
+
+// Compresses a photo client-side (max 1280px, JPEG) so the upload
+// stays small enough for the Apps Script endpoint and mobile data
+function compressImage(file){
+  return new Promise((resolve,reject)=>{
+    const reader=new FileReader();
+    reader.onerror=()=>reject(new Error('Could not read image'));
+    reader.onload=()=>{
+      const img=new Image();
+      img.onerror=()=>reject(new Error('Invalid image file'));
+      img.onload=()=>{
+        const MAX=1280;
+        let{width:w,height:h}=img;
+        if(w>MAX||h>MAX){const s=MAX/Math.max(w,h);w=Math.round(w*s);h=Math.round(h*s);}
+        const cv=document.createElement('canvas');
+        cv.width=w;cv.height=h;
+        cv.getContext('2d').drawImage(img,0,0,w,h);
+        const dataUrl=cv.toDataURL('image/jpeg',0.72);
+        resolve(dataUrl.split(',')[1]); // strip "data:image/jpeg;base64,"
+      };
+      img.src=reader.result;
+    };
+    reader.readAsDataURL(file);
+  });
+}
+
+async function uploadPhoto(input){
+  const file=input.files&&input.files[0];
+  if(!file)return;
+  const row=resolveModalRow();
+  if(!row){input.value='';return;}
+  const {ln,containerNo}=opModalCurrent;
+  const btn=document.getElementById('omPhotoBtn');
+  const errEl=document.getElementById('omVerifyErr');
+  errEl.textContent='';
+
+  btn.disabled=true;
+  btn.innerHTML='<i class="ti ti-loader-2 spin"></i> Uploading...';
+  try{
+    const b64=await compressImage(file);
+    const data=await postToWebApp({line:ln,containerNo:containerNo,action:'uploadPhoto',imageBase64:b64,mimeType:'image/jpeg'});
+    row[22]=data.photoUrl;
+    saveDataCache();
+    setModalPhoto(data.photoUrl);
+    renderOpCards();
+    showOpToast('Photo uploaded for '+containerNo);
+  }catch(e){
+    setModalPhoto(String(row[22]||'').trim());
+    errEl.textContent='Could not upload photo: '+e.message;
+  }finally{
+    btn.disabled=false;
+    input.value='';
+  }
+}
+
 // ── BACK OFFICE CHARTS ────────────────────────────────
 const charts={};
 function destroyChart(id){if(charts[id]){charts[id].destroy();delete charts[id];}}
@@ -1130,7 +1326,7 @@ function getDetailRows(){
       const dl=Number(row[13]),risk=getRisk(dl);if(!risk)continue;
       const reqDateParsed=parseReqDate(String(row[11]||''));
       const reqDateFmt=reqDateParsed?reqDateParsed.getDate()+' '+MONTHS[reqDateParsed.getMonth()]+' '+reqDateParsed.getFullYear():(row[11]||'—');
-      rows.push({ln,containerNo,dl,risk,location:String(row[15]||'').trim()||'—',depot:String(row[9]||'').trim()||'—',ctype:String(row[18]||'').trim()||'—',reqDate:reqDateFmt,verified:String(row[20]||'').trim().toLowerCase()==='verified'});
+      rows.push({ln,containerNo,dl,risk,location:String(row[15]||'').trim()||'—',depot:String(row[9]||'').trim()||'—',ctype:String(row[18]||'').trim()||'—',reqDate:reqDateFmt,verified:String(row[20]||'').trim().toLowerCase()==='verified',actualLoc:String(row[21]||'').trim(),photo:String(row[22]||'').trim()});
     }
   }
   return rows;
@@ -1142,7 +1338,7 @@ function renderDetailTable(){
   if(state.detailFilter!=='all')rows=rows.filter(r=>r.risk===state.detailFilter);
   if(state.verifyFilter==='verified')rows=rows.filter(r=>r.verified);
   else if(state.verifyFilter==='unverified')rows=rows.filter(r=>!r.verified);
-  if(search)rows=rows.filter(r=>r.containerNo.toLowerCase().includes(search)||r.depot.toLowerCase().includes(search)||r.location.toLowerCase().includes(search)||r.ctype.toLowerCase().includes(search)||r.ln.toLowerCase().includes(search));
+  if(search)rows=rows.filter(r=>r.containerNo.toLowerCase().includes(search)||r.depot.toLowerCase().includes(search)||r.location.toLowerCase().includes(search)||r.actualLoc.toLowerCase().includes(search)||r.ctype.toLowerCase().includes(search)||r.ln.toLowerCase().includes(search));
   const order={overdue:0,critical:1,warning:2,monitor:3};
   rows.sort((a,b)=>order[a.risk]-order[b.risk]||a.dl-b.dl);
   const dc=document.getElementById('detailCount');if(dc)dc.textContent=rows.length+' container'+(rows.length!==1?'s':'');
@@ -1151,10 +1347,12 @@ function renderDetailTable(){
   const daysStyle=r=>r.dl<0?'color:var(--red);font-weight:700;':r.dl<=3?'color:var(--orange);font-weight:600;':r.dl<=5?'color:var(--amber);font-weight:600;':'';
   const daysLabel=r=>r.dl<0?r.dl+' days':r.dl===0?'Today':r.dl===1?'Tomorrow':r.dl+' days';
   const verifyCell=r=>r.verified?'<span class="bo-verified-badge"><i class="ti ti-circle-check-filled"></i> Verified</span>':'<span style="color:var(--text3);">—</span>';
+  const actualCell=r=>r.actualLoc?`<span class="bo-actual-loc"><i class="ti ti-map-pin-check"></i> ${r.actualLoc}</span>`:'<span style="color:var(--text3);">—</span>';
+  const photoCell=r=>r.photo?`<a href="${r.photo}" target="_blank" rel="noopener" class="bo-photo-link" title="Open photo"><img src="${driveThumbUrl(r.photo,100)}" alt="photo" loading="lazy"></a>`:'<span style="color:var(--text3);">—</span>';
   const db=document.getElementById('detailBody');
   if(!db)return;
-  if(rows.length===0){db.innerHTML='<tr><td colspan="9" class="tbl-empty">No containers match this filter.</td></tr>';return;}
-  db.innerHTML=rows.map(r=>`<tr><td style="font-family:monospace;font-size:12px;">${r.containerNo}</td><td>${r.ln}</td><td>${r.ctype}</td><td>${r.depot}</td><td style="color:var(--text3);">${r.reqDate}</td><td style="${daysStyle(r)}">${daysLabel(r)}</td><td>${rb[r.risk]}</td><td style="${locStyle(r)}">${r.location}</td><td>${verifyCell(r)}</td></tr>`).join('');
+  if(rows.length===0){db.innerHTML='<tr><td colspan="11" class="tbl-empty">No containers match this filter.</td></tr>';return;}
+  db.innerHTML=rows.map(r=>`<tr><td style="font-family:monospace;font-size:12px;">${r.containerNo}</td><td>${r.ln}</td><td>${r.ctype}</td><td>${r.depot}</td><td style="color:var(--text3);">${r.reqDate}</td><td style="${daysStyle(r)}">${daysLabel(r)}</td><td>${rb[r.risk]}</td><td style="${locStyle(r)}">${r.location}</td><td>${actualCell(r)}</td><td>${photoCell(r)}</td><td>${verifyCell(r)}</td></tr>`).join('');
 }
 
 function setVerifyFilter(f){
@@ -1168,7 +1366,7 @@ function setVerifyFilter(f){
 
 // ── EXPORT ────────────────────────────────────────────
 function buildExportData(){const lines=getLines(),range=getDateRange(),header=['Shipping Line','Container No','Type','Depot','Req Date','Days Left','Risk','Status','Location'],data=[header];for(const ln of lines){for(const row of(state[ln]||[])){const c=String(row[2]||'').trim();if(!c||!rowInDateRange(row,range))continue;const dl=Number(row[13]),st=String(row[14]||'').trim(),risk=st==='Sudah keluar'?'Completed':(getRisk(dl)||'OK');data.push([ln,c,String(row[18]||'').trim()||'—',String(row[9]||'').trim()||'—',String(row[11]||'').trim()||'—',dl,risk,st,String(row[15]||'').trim()||'—']);}}return data;}
-function buildDetailExportData(){const search=(document.getElementById('detailSearch').value||'').toLowerCase().trim();let rows=getDetailRows();if(state.detailFilter!=='all')rows=rows.filter(r=>r.risk===state.detailFilter);if(state.verifyFilter==='verified')rows=rows.filter(r=>r.verified);else if(state.verifyFilter==='unverified')rows=rows.filter(r=>!r.verified);if(search)rows=rows.filter(r=>r.containerNo.toLowerCase().includes(search)||r.depot.toLowerCase().includes(search)||r.location.toLowerCase().includes(search));const order={overdue:0,critical:1,warning:2,monitor:3};rows.sort((a,b)=>order[a.risk]-order[b.risk]||a.dl-b.dl);return[['Shipping Line','Container No','Type','Depot','Req Date','Days Left','Risk','Location','Status by OPS'],...rows.map(r=>[r.ln,r.containerNo,r.ctype,r.depot,r.reqDate,r.dl,r.risk,r.location,r.verified?'Verified':''])];}
+function buildDetailExportData(){const search=(document.getElementById('detailSearch').value||'').toLowerCase().trim();let rows=getDetailRows();if(state.detailFilter!=='all')rows=rows.filter(r=>r.risk===state.detailFilter);if(state.verifyFilter==='verified')rows=rows.filter(r=>r.verified);else if(state.verifyFilter==='unverified')rows=rows.filter(r=>!r.verified);if(search)rows=rows.filter(r=>r.containerNo.toLowerCase().includes(search)||r.depot.toLowerCase().includes(search)||r.location.toLowerCase().includes(search));const order={overdue:0,critical:1,warning:2,monitor:3};rows.sort((a,b)=>order[a.risk]-order[b.risk]||a.dl-b.dl);return[['Shipping Line','Container No','Type','Depot','Req Date','Days Left','Risk','Location','Actual Location (OPS)','Photo URL','Status by OPS'],...rows.map(r=>[r.ln,r.containerNo,r.ctype,r.depot,r.reqDate,r.dl,r.risk,r.location,r.actualLoc||'',r.photo||'',r.verified?'Verified':''])];}
 function toCSV(data){return data.map(r=>r.map(v=>'"'+String(v).replace(/"/g,'""')+'"').join(',')).join('\n');}
 function downloadFile(content,filename,mime){const b=new Blob([content],{type:mime}),a=document.createElement('a');a.href=URL.createObjectURL(b);a.download=filename;a.click();URL.revokeObjectURL(a.href);}
 function dateStr(){const d=new Date();return d.getFullYear()+String(d.getMonth()+1).padStart(2,'0')+String(d.getDate()).padStart(2,'0');}
