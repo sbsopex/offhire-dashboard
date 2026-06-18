@@ -10,6 +10,7 @@
 :root {
   --navy:#1b3a5c; --navy-light:#2a5280;
   --red:#A32D2D; --amber:#BA7517; --green:#3B6D11; --orange:#854F0B;
+  --purple:#6B3FA0; --purple-light:#8B5FC0;
   --bg:#f0f2f5; --surface:#ffffff; --surface2:#f7f9fc;
   --border:#d0d8e4; --text:#1a2333; --text2:#5a6a7e; --text3:#8a99aa;
   --radius:10px; --radius-sm:6px;
@@ -51,9 +52,10 @@ body { font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Arial,sans-serif;
 .op-search-icon { position:absolute; left:12px; top:50%; transform:translateY(-50%); color:var(--text3); font-size:18px; pointer-events:none; }
 .op-search-clear { position:absolute; right:12px; top:50%; transform:translateY(-50%); color:var(--text3); font-size:18px; cursor:pointer; background:none; border:none; display:none; }
 
-.op-kpi-strip { display:grid; grid-template-columns:repeat(4,1fr); gap:8px; padding:12px 16px 4px; }
+.op-kpi-strip { display:grid; grid-template-columns:repeat(5,1fr); gap:8px; padding:12px 16px 4px; }
 .op-kpi { background:var(--surface); border-radius:var(--radius-sm); padding:10px 6px; text-align:center; border:1px solid var(--border); position:relative; overflow:hidden; cursor:pointer; transition:opacity 0.15s; }
 .op-kpi::after { content:''; position:absolute; top:0; left:0; right:0; height:3px; }
+.op-kpi-prioritas::after { background:var(--purple); }
 .op-kpi-overdue::after  { background:var(--red); }
 .op-kpi-critical::after { background:var(--orange); }
 .op-kpi-warning::after  { background:var(--amber); }
@@ -66,6 +68,7 @@ body { font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Arial,sans-serif;
 .op-filter-row::-webkit-scrollbar { display:none; }
 .op-fbtn { flex-shrink:0; font-size:12px; font-family:inherit; padding:6px 14px; border-radius:100px; border:1px solid var(--border); background:var(--surface); color:var(--text2); cursor:pointer; white-space:nowrap; transition:all 0.15s; }
 .op-fbtn.active          { background:var(--navy);   color:#fff; border-color:var(--navy); }
+.op-fbtn.rf-prioritas.active { background:var(--purple); color:#fff; border-color:var(--purple); }
 .op-fbtn.rf-overdue.active  { background:var(--red);    color:#fff; border-color:var(--red); }
 .op-fbtn.rf-critical.active { background:var(--orange); color:#fff; border-color:var(--orange); }
 .op-fbtn.rf-warning.active  { background:var(--amber);  color:#fff; border-color:var(--amber); }
@@ -81,6 +84,7 @@ body { font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Arial,sans-serif;
 .op-cards { padding:0 16px 24px; display:flex; flex-direction:column; gap:10px; }
 
 .op-card { background:var(--surface); border-radius:var(--radius); border:1px solid var(--border); padding:14px; border-left:4px solid var(--border); }
+.op-card.risk-prioritas { border-left-color:var(--purple); box-shadow:0 0 0 1px rgba(107,63,160,0.25); }
 .op-card.risk-overdue  { border-left-color:var(--red); }
 .op-card.risk-critical { border-left-color:var(--orange); }
 .op-card.risk-warning  { border-left-color:var(--amber); }
@@ -89,6 +93,7 @@ body { font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Arial,sans-serif;
 .op-card-header { display:flex; align-items:center; justify-content:space-between; margin-bottom:10px; }
 .op-container-no { font-size:17px; font-weight:700; font-family:monospace; letter-spacing:1px; color:var(--navy); }
 .op-risk-badge { display:inline-flex; align-items:center; gap:4px; padding:4px 10px; border-radius:100px; font-size:11px; font-weight:600; }
+.rb-prioritas { background:#f0e8f7; color:#4a2270; }
 .rb-overdue  { background:#faece7; color:#7a2000; }
 .rb-critical { background:#fff0e0; color:#6b3500; }
 .rb-warning  { background:#fffbec; color:#6b4800; }
@@ -104,10 +109,14 @@ body { font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Arial,sans-serif;
 .op-field.span2 { grid-column:span 2; }
 
 .op-days-chip { display:inline-block; padding:2px 10px; border-radius:100px; font-size:12px; font-weight:700; }
+.dc-prioritas { background:#f0e8f7; color:#4a2270; }
 .dc-overdue  { background:#faece7; color:#7a2000; }
 .dc-critical { background:#fff0e0; color:#6b3500; }
 .dc-warning  { background:#fffbec; color:#6b4800; }
 .dc-monitor  { background:#eaf3de; color:#2d5e0a; }
+
+.op-prioritas-chip { display:inline-flex; align-items:center; gap:3px; padding:4px 9px; border-radius:100px; font-size:10px; font-weight:700; background:var(--purple); color:#fff; white-space:nowrap; }
+.op-prioritas-chip i { font-size:12px; }
 
 .op-empty { text-align:center; padding:48px 24px; color:var(--text3); }
 .op-empty i { font-size:40px; display:block; margin-bottom:12px; opacity:0.4; }
@@ -213,11 +222,12 @@ body { font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Arial,sans-serif;
 .icon-btn.export-csv:hover { background:#f0f4ff; }
 select { font-family:inherit; font-size:12px; padding:5px 12px; border-radius:100px; border:1px solid var(--border); background:var(--surface); color:var(--text); cursor:pointer; }
 
-.kpi-strip { display:grid; grid-template-columns:repeat(4,1fr); gap:12px; margin-bottom:14px; }
+.kpi-strip { display:grid; grid-template-columns:repeat(5,1fr); gap:12px; margin-bottom:14px; }
 .kpi-card { background:var(--surface); border:1px solid var(--border); border-radius:var(--radius); padding:16px 12px; text-align:center; position:relative; overflow:hidden; cursor:pointer; transition:box-shadow 0.15s,transform 0.1s; }
 .kpi-card:hover { box-shadow:0 2px 12px rgba(0,0,0,0.08); transform:translateY(-1px); }
 .kpi-card.active { border-color:var(--navy); box-shadow:0 0 0 2px var(--navy); }
 .kpi-card::after { content:''; position:absolute; top:0; left:0; right:0; height:3px; }
+.kpi-prioritas::after { background:var(--purple); }
 .kpi-overdue::after  { background:var(--red); }
 .kpi-critical::after { background:var(--orange); }
 .kpi-warning::after  { background:var(--amber); }
@@ -225,7 +235,7 @@ select { font-family:inherit; font-size:12px; padding:5px 12px; border-radius:10
 .kpi-num { font-size:32px; font-weight:700; line-height:1; }
 .kpi-lbl { font-size:9px; letter-spacing:1.5px; color:var(--text3); margin-top:5px; text-transform:uppercase; }
 .kpi-sub { font-size:11px; color:var(--text3); margin-top:4px; }
-.col-overdue{color:var(--red);} .col-critical{color:var(--orange);} .col-warning{color:var(--amber);} .col-monitor{color:var(--green);} .col-green{color:var(--green);} .col-red{color:var(--red);}
+.col-prioritas{color:var(--purple);} .col-overdue{color:var(--red);} .col-critical{color:var(--orange);} .col-warning{color:var(--amber);} .col-monitor{color:var(--green);} .col-green{color:var(--green);} .col-red{color:var(--red);}
 
 .row2 { display:grid; grid-template-columns:1fr 1fr; gap:14px; margin-bottom:14px; }
 .full { margin-bottom:14px; }
@@ -242,6 +252,7 @@ select { font-family:inherit; font-size:12px; padding:5px 12px; border-radius:10
 .insight-warning { background:#fffbf0; border-color:var(--amber); color:#4a3000; }
 .insight-success { background:#f0fff4; border-color:var(--green); color:#1a4000; }
 .insight-neutral { background:var(--surface2); border-color:var(--border); color:var(--text2); font-style:italic; }
+.insight-prioritas { background:#f5f0fa; border-color:var(--purple); color:#3a1a5c; }
 
 .stat-row { display:flex; justify-content:space-between; align-items:center; padding:8px 0; border-bottom:1px solid var(--border); font-size:13px; }
 .stat-row:last-child { border-bottom:none; }
@@ -271,6 +282,8 @@ tbody td { padding:8px 10px; border-bottom:1px solid var(--border); text-align:c
 tbody td:first-child { text-align:left; font-weight:500; }
 tbody tr:last-child td { border-bottom:none; }
 tbody tr:hover td { background:var(--surface2); }
+tbody tr.row-prioritas td { background:#faf7fd; }
+tbody tr.row-prioritas:hover td { background:#f3ecfa; }
 .tbl-empty { text-align:center !important; color:var(--text3) !important; font-style:italic; padding:20px !important; font-weight:400 !important; }
 
 .badge { display:inline-block; padding:2px 9px; border-radius:100px; font-size:10px; font-weight:600; }
@@ -278,6 +291,7 @@ tbody tr:hover td { background:var(--surface2); }
 .badge-warning  { background:#faeeda; color:#7a4500; }
 .badge-critical { background:#faece7; color:#7a2000; }
 .bo-risk-badge { display:inline-block; padding:2px 9px; border-radius:100px; font-size:10px; font-weight:600; white-space:nowrap; }
+.rb-prioritas-bo { background:#f0e8f7; color:#4a2270; }
 
 .date-filter-bar { background:var(--surface); border:1px solid var(--border); border-radius:var(--radius); padding:14px 18px; margin-bottom:14px; }
 .date-filter-title { font-size:10px; font-weight:600; letter-spacing:1.2px; color:var(--text2); text-transform:uppercase; margin-bottom:10px; display:flex; align-items:center; gap:6px; }
@@ -300,6 +314,7 @@ tbody tr:hover td { background:var(--surface2); }
 .risk-filter-btns { display:flex; gap:5px; flex-wrap:wrap; }
 .rfbtn { font-size:11px; font-family:inherit; padding:4px 11px; border-radius:100px; border:1px solid var(--border); background:var(--surface); color:var(--text2); cursor:pointer; transition:all 0.15s; }
 .rfbtn.active          { background:var(--navy);   border-color:var(--navy);   color:#fff; }
+.rfbtn.rf-prioritas.active { background:var(--purple); border-color:var(--purple); color:#fff; }
 .rfbtn.rf-overdue.active  { background:var(--red);    border-color:var(--red);    color:#fff; }
 .rfbtn.rf-critical.active { background:var(--orange); border-color:var(--orange); color:#fff; }
 .rfbtn.rf-warning.active  { background:var(--amber);  border-color:var(--amber);  color:#fff; }
@@ -365,6 +380,10 @@ footer { text-align:center; font-size:11px; color:var(--text3); padding-top:20px
   </div>
 
   <div class="op-kpi-strip">
+    <div class="op-kpi op-kpi-prioritas" id="opKpiPrioritas" onclick="toggleOpFilter('prioritas')">
+      <div class="op-kpi-num col-prioritas" id="opKPrioritas">—</div>
+      <div class="op-kpi-lbl">Prioritas</div>
+    </div>
     <div class="op-kpi op-kpi-overdue" id="opKpiOverdue" onclick="toggleOpFilter('overdue')">
       <div class="op-kpi-num col-overdue" id="opKOverdue">—</div>
       <div class="op-kpi-lbl">Overdue</div>
@@ -385,6 +404,7 @@ footer { text-align:center; font-size:11px; color:var(--text3); padding-top:20px
 
   <div class="op-filter-row">
     <button class="op-fbtn active"         id="opFAll"      onclick="setOpFilter('all')">All</button>
+    <button class="op-fbtn rf-prioritas"   id="opFPrioritas" onclick="setOpFilter('prioritas')" style="border-color:#d9c7ec;color:var(--purple);">Prioritas</button>
     <button class="op-fbtn rf-overdue"     id="opFOverdue"  onclick="setOpFilter('overdue')">Overdue</button>
     <button class="op-fbtn rf-critical"    id="opFCritical" onclick="setOpFilter('critical')">Critical</button>
     <button class="op-fbtn rf-warning"     id="opFWarning"  onclick="setOpFilter('warning')">Warning</button>
@@ -538,6 +558,10 @@ footer { text-align:center; font-size:11px; color:var(--text3); padding-top:20px
   </div>
 
   <div class="kpi-strip">
+    <div class="kpi-card kpi-prioritas" onclick="setDetailFilter('prioritas')" id="kpiPrioritas">
+      <div class="kpi-num col-prioritas" id="kPrioritas">—</div>
+      <div class="kpi-lbl">Prioritas</div><div class="kpi-sub">Flagged priority</div>
+    </div>
     <div class="kpi-card kpi-overdue" onclick="setDetailFilter('overdue')" id="kpiOverdue">
       <div class="kpi-num col-overdue" id="kOverdue">—</div>
       <div class="kpi-lbl">Overdue</div><div class="kpi-sub">Past deadline</div>
@@ -563,7 +587,20 @@ footer { text-align:center; font-size:11px; color:var(--text3); padding-top:20px
 
   <div class="row2">
     <div class="card">
-      <div class="card-title"><i class="ti ti-chart-donut"></i> Container status</div>
+      <div class="card-title"><i class="ti ti-chart-donut"></i> Risk category breakdown</div>
+      <div class="chart-legend" id="riskLegend"></div>
+      <div class="chart-wrap" style="height:220px;"><canvas id="chartRisk" role="img" aria-label="Risk category donut chart"></canvas></div>
+    </div>
+    <div class="card">
+      <div class="card-title"><i class="ti ti-chart-bar"></i> Completion by shipping line</div>
+      <div class="chart-legend" id="lineLegend"></div>
+      <div class="chart-wrap" style="height:220px;"><canvas id="chartLine" role="img" aria-label="Completion by line bar chart"></canvas></div>
+    </div>
+  </div>
+
+  <div class="row2">
+    <div class="card">
+      <div class="card-title"><i class="ti ti-chart-donut-3"></i> Container status</div>
       <div class="stat-row"><span class="stat-lbl">Dalam Proses</span><span class="stat-val" id="sDalamProses">—</span></div>
       <div class="stat-row"><span class="stat-lbl">Sudah Keluar</span><span class="stat-val col-green" id="sSudahKeluar">—</span></div>
       <div class="stat-row"><span class="stat-lbl">Total containers</span><span class="stat-val" id="sTotal">—</span></div>
@@ -599,19 +636,6 @@ footer { text-align:center; font-size:11px; color:var(--text3); padding-top:20px
 
   <div class="row2">
     <div class="card">
-      <div class="card-title"><i class="ti ti-chart-donut-3"></i> Risk category breakdown</div>
-      <div class="chart-legend" id="riskLegend"></div>
-      <div class="chart-wrap" style="height:220px;"><canvas id="chartRisk" role="img" aria-label="Risk category donut chart"></canvas></div>
-    </div>
-    <div class="card">
-      <div class="card-title"><i class="ti ti-chart-bar"></i> Completion by shipping line</div>
-      <div class="chart-legend" id="lineLegend"></div>
-      <div class="chart-wrap" style="height:220px;"><canvas id="chartLine" role="img" aria-label="Completion by line bar chart"></canvas></div>
-    </div>
-  </div>
-
-  <div class="row2">
-    <div class="card">
       <div class="card-title"><i class="ti ti-building-warehouse"></i> Depot activity</div>
       <div class="chart-legend">
         <span class="legend-item"><span class="legend-dot" style="background:#378ADD;"></span>Dalam Proses</span>
@@ -632,8 +656,8 @@ footer { text-align:center; font-size:11px; color:var(--text3); padding-top:20px
   <div class="card full">
     <div class="card-title"><i class="ti ti-ship"></i> Shipping line summary</div>
     <div class="tbl-wrap"><table>
-      <thead><tr><th>Line</th><th>Total</th><th>Dalam Proses</th><th>Sudah Keluar</th><th>Overdue</th><th>Critical</th><th>Warning</th><th>Monitor</th><th>Completion</th></tr></thead>
-      <tbody id="shippingLineBody"><tr><td colspan="9" class="tbl-empty">Loading...</td></tr></tbody>
+      <thead><tr><th>Line</th><th>Total</th><th>Dalam Proses</th><th>Sudah Keluar</th><th>Prioritas</th><th>Overdue</th><th>Critical</th><th>Warning</th><th>Monitor</th><th>Completion</th></tr></thead>
+      <tbody id="shippingLineBody"><tr><td colspan="10" class="tbl-empty">Loading...</td></tr></tbody>
     </table></div>
   </div>
 
@@ -656,6 +680,7 @@ footer { text-align:center; font-size:11px; color:var(--text3); padding-top:20px
     <div class="detail-controls">
       <div class="risk-filter-btns">
         <button class="rfbtn active"      id="rfAll"      onclick="setDetailFilter('all')">All active</button>
+        <button class="rfbtn rf-prioritas" id="rfPrioritas" onclick="setDetailFilter('prioritas')">Prioritas</button>
         <button class="rfbtn rf-overdue"  id="rfOverdue"  onclick="setDetailFilter('overdue')">Overdue</button>
         <button class="rfbtn rf-critical" id="rfCritical" onclick="setDetailFilter('critical')">Critical</button>
         <button class="rfbtn rf-warning"  id="rfWarning"  onclick="setDetailFilter('warning')">Warning</button>
@@ -864,21 +889,43 @@ async function fetchAllData(){
   autoRetryTimer=setTimeout(()=>{if(seq===fetchSeq)fetchAllData();},10000);
 }
 function applyFilter(){state.filter=document.getElementById('lineFilter').value;render();}
+
+// Risk classification. Reads the RAW cell (row[13]) first so the literal
+// string "Prioritas" (written by the Apps Script when a container is on
+// 'List prioritas MSL') is recognized as its own top-tier risk bucket
+// instead of falling through to Number(raw) => NaN => no bucket at all
+// (which would have silently hidden those rows from both dashboard views).
+// Falls back to the normal numeric ladder for every other value.
+function getRiskFromRaw(raw){
+  if(String(raw||'').trim().toLowerCase()==='prioritas')return'prioritas';
+  // Guard against Number('')===0 / Number(null)===0 silently landing in the
+  // Critical bucket for genuinely blank cells (pre-existing edge case,
+  // hardened here since this function now owns all raw->risk classification).
+  if(raw===null||raw===undefined||String(raw).trim()==='')return null;
+  const d=Number(raw);
+  if(isNaN(d))return null;
+  return getRisk(d);
+}
 function getRisk(d){if(d<0)return'overdue';if(d<=3)return'critical';if(d<=5)return'warning';if(d<=7)return'monitor';return null;}
 function getLines(){return state.filter==='ALL'?['MSL','GSL']:[state.filter];}
 
 // ── COMPUTE STATS ─────────────────────────────────────
 function computeStats(){
   const lines=getLines(),range=getDateRange();
-  let overdue=0,critical=0,warning=0,monitor=0,dalamProses=0,sudahKeluar=0,locFound=0,locMissing=0,blindSpot=0,todayCount=0,tomorrowCount=0;
-  const riskLoc={overdue:{f:0,m:0},critical:{f:0,m:0},warning:{f:0,m:0},monitor:{f:0,m:0}};
+  let prioritas=0,overdue=0,critical=0,warning=0,monitor=0,dalamProses=0,sudahKeluar=0,locFound=0,locMissing=0,blindSpot=0,todayCount=0,tomorrowCount=0;
+  const riskLoc={prioritas:{f:0,m:0},overdue:{f:0,m:0},critical:{f:0,m:0},warning:{f:0,m:0},monitor:{f:0,m:0}};
   const slSummary={},depotMap={},ctypeMap={};
   for(const ln of lines){
-    slSummary[ln]={total:0,dalamProses:0,sudahKeluar:0,overdue:0,critical:0,warning:0,monitor:0};
+    slSummary[ln]={total:0,dalamProses:0,sudahKeluar:0,prioritas:0,overdue:0,critical:0,warning:0,monitor:0};
     for(const row of(state[ln]||[])){
       if(!String(row[2]||'').trim())continue;
       if(!rowInDateRange(row,range))continue;
-      const dl=Number(row[13]),status=String(row[14]||'').trim(),location=String(row[15]||'').trim(),depot=String(row[9]||'').trim(),ctype=String(row[18]||'').trim();
+      const rawDl=row[13],status=String(row[14]||'').trim(),location=String(row[15]||'').trim(),depot=String(row[9]||'').trim(),ctype=String(row[18]||'').trim();
+      const risk=getRiskFromRaw(rawDl);
+      // Numeric days-left used for "today/tomorrow" insight counters — falls
+      // back to the Due-date-derived value computed by the Apps Script even
+      // when flagged Prioritas, since column N holds the literal string then.
+      const dl=Number(rawDl);
       const isFound=location&&location!=='Missing location';
       slSummary[ln].total++;
       if(isFound)locFound++;else locMissing++;
@@ -886,10 +933,11 @@ function computeStats(){
       if(status==='Sudah keluar'){sudahKeluar++;slSummary[ln].sudahKeluar++;}else{dalamProses++;slSummary[ln].dalamProses++;}
       if(ctype&&status!=='Sudah keluar'){if(!ctypeMap[ctype])ctypeMap[ctype]={total:0,f:0,m:0};ctypeMap[ctype].total++;if(!isFound)ctypeMap[ctype].m++;else ctypeMap[ctype].f++;}
       if(status!=='Sudah keluar'){
-        if(dl<0){overdue++;slSummary[ln].overdue++;if(isFound)riskLoc.overdue.f++;else{riskLoc.overdue.m++;blindSpot++;}}
-        else if(dl<=3){critical++;slSummary[ln].critical++;if(isFound)riskLoc.critical.f++;else{riskLoc.critical.m++;blindSpot++;}if(dl===0)todayCount++;if(dl===1)tomorrowCount++;}
-        else if(dl<=5){warning++;slSummary[ln].warning++;if(isFound)riskLoc.warning.f++;else riskLoc.warning.m++;}
-        else if(dl<=7){monitor++;slSummary[ln].monitor++;if(isFound)riskLoc.monitor.f++;else riskLoc.monitor.m++;}
+        if(risk==='prioritas'){prioritas++;slSummary[ln].prioritas++;if(isFound)riskLoc.prioritas.f++;else{riskLoc.prioritas.m++;blindSpot++;}}
+        else if(risk==='overdue'){overdue++;slSummary[ln].overdue++;if(isFound)riskLoc.overdue.f++;else{riskLoc.overdue.m++;blindSpot++;}}
+        else if(risk==='critical'){critical++;slSummary[ln].critical++;if(isFound)riskLoc.critical.f++;else{riskLoc.critical.m++;blindSpot++;}if(!isNaN(dl)){if(dl===0)todayCount++;if(dl===1)tomorrowCount++;}}
+        else if(risk==='warning'){warning++;slSummary[ln].warning++;if(isFound)riskLoc.warning.f++;else riskLoc.warning.m++;}
+        else if(risk==='monitor'){monitor++;slSummary[ln].monitor++;if(isFound)riskLoc.monitor.f++;else riskLoc.monitor.m++;}
       }
     }
   }
@@ -897,14 +945,14 @@ function computeStats(){
   let health=100;
   if(total>0){health-=Math.round((overdue/total)*40);health-=Math.round((critical/total)*20);health-=Math.round((blindSpot/total)*20);health-=Math.round((locMissing/total)*20);}
   health=Math.max(0,Math.min(100,health));
-  return{overdue,critical,warning,monitor,dalamProses,sudahKeluar,total,compRate,locFound,locMissing,blindSpot,todayCount,tomorrowCount,riskLoc,slSummary,depotMap,ctypeMap,health};
+  return{prioritas,overdue,critical,warning,monitor,dalamProses,sudahKeluar,total,compRate,locFound,locMissing,blindSpot,todayCount,tomorrowCount,riskLoc,slSummary,depotMap,ctypeMap,health};
 }
 
 // ── OPERATOR VIEW ─────────────────────────────────────
 function setOpFilter(f){
   state.opFilter=f;
-  ['opFAll','opFOverdue','opFCritical','opFWarning','opFMonitor','opFMissing'].forEach(id=>{const el=document.getElementById(id);if(el)el.classList.remove('active');});
-  const map={all:'opFAll',overdue:'opFOverdue',critical:'opFCritical',warning:'opFWarning',monitor:'opFMonitor',missing:'opFMissing'};
+  ['opFAll','opFPrioritas','opFOverdue','opFCritical','opFWarning','opFMonitor','opFMissing'].forEach(id=>{const el=document.getElementById(id);if(el)el.classList.remove('active');});
+  const map={all:'opFAll',prioritas:'opFPrioritas',overdue:'opFOverdue',critical:'opFCritical',warning:'opFWarning',monitor:'opFMonitor',missing:'opFMissing'};
   if(map[f])document.getElementById(map[f]).classList.add('active');
   renderOpCards();
 }
@@ -932,8 +980,9 @@ function renderOpCards(){
       if(!containerNo)continue;
       const status=String(row[14]||'').trim();
       if(status==='Sudah keluar')continue;
-      const dl=Number(row[13]),risk=getRisk(dl);
+      const rawDl=row[13],risk=getRiskFromRaw(rawDl);
       if(!risk)continue;
+      const dl=Number(rawDl); // NaN when risk==='prioritas' — handled by daysLabel()
       const location=String(row[15]||'').trim()||'—';
       const depot=String(row[9]||'').trim()||'—';
       const ctype=String(row[18]||'').trim()||'—';
@@ -944,7 +993,12 @@ function renderOpCards(){
       const verified=String(row[20]||'').trim().toLowerCase()==='verified';
       const actualLoc=String(row[21]||'').trim();
       const photo=String(row[22]||'').trim();
-      rows.push({ln,idx:i,containerNo,dl,risk,location,depot,ctype,reqDate:reqDateFmt,isFound,verified,actualLoc,photo});
+      // Real due-date countdown, computed independently of the Prioritas
+      // override on column N, so Prioritas cards can still show "Expires
+      // in X days" using the Due date in column M (index 12) + today.
+      const dueDate=parseReqDate(String(row[12]||''));
+      const dueDl=dueDate?Math.ceil((dueDate.getTime()-new Date().setHours(0,0,0,0))/86400000):null;
+      rows.push({ln,idx:i,containerNo,dl,dueDl,risk,location,depot,ctype,reqDate:reqDateFmt,isFound,verified,actualLoc,photo});
     }
   }
 
@@ -960,17 +1014,23 @@ function renderOpCards(){
     r.actualLoc.toLowerCase().includes(search)||
     r.ctype.toLowerCase().includes(search)
   );
-  const order={overdue:0,critical:1,warning:2,monitor:3};
-  filtered.sort((a,b)=>order[a.risk]-order[b.risk]||a.dl-b.dl);
+  const order={prioritas:-1,overdue:0,critical:1,warning:2,monitor:3};
+  filtered.sort((a,b)=>order[a.risk]-order[b.risk]||(a.dl-b.dl||0));
 
   const meta=document.getElementById('opResultMeta');
   if(meta)meta.textContent=filtered.length+' container'+(filtered.length!==1?'s':'')+' shown';
 
-  const daysLabel=r=>r.dl<0?Math.abs(r.dl)+' day'+(Math.abs(r.dl)!==1?'s':'')+' overdue':r.dl===0?'Expires today':r.dl===1?'Expires tomorrow':'Expires in '+r.dl+' days';
-  const daysChipClass=r=>r.risk==='overdue'?'dc-overdue':r.risk==='critical'?'dc-critical':r.risk==='warning'?'dc-warning':'dc-monitor';
+  const daysLabel=r=>{
+    // For Prioritas rows, column N has no number — fall back to the real
+    // due-date countdown (dueDl) so the operator still sees a concrete date.
+    const d=r.risk==='prioritas'?r.dueDl:r.dl;
+    if(d===null||isNaN(d))return'See due date';
+    return d<0?Math.abs(d)+' day'+(Math.abs(d)!==1?'s':'')+' overdue':d===0?'Expires today':d===1?'Expires tomorrow':'Expires in '+d+' days';
+  };
+  const daysChipClass=r=>r.risk==='prioritas'?'dc-prioritas':r.risk==='overdue'?'dc-overdue':r.risk==='critical'?'dc-critical':r.risk==='warning'?'dc-warning':'dc-monitor';
   const riskBadgeHtml=r=>{
-    const cls={overdue:'rb-overdue',critical:'rb-critical',warning:'rb-warning',monitor:'rb-monitor'}[r.risk];
-    const lbl={overdue:'Overdue',critical:'Critical',warning:'Warning',monitor:'Monitor'}[r.risk];
+    const cls={prioritas:'rb-prioritas',overdue:'rb-overdue',critical:'rb-critical',warning:'rb-warning',monitor:'rb-monitor'}[r.risk];
+    const lbl={prioritas:'Prioritas',overdue:'Overdue',critical:'Critical',warning:'Warning',monitor:'Monitor'}[r.risk];
     return`<span class="op-risk-badge ${cls}">${lbl}</span>`;
   };
 
@@ -1026,6 +1086,7 @@ function renderOpCards(){
 
 function renderOpKpis(){
   const s=computeStats();
+  document.getElementById('opKPrioritas').textContent=s.prioritas;
   document.getElementById('opKOverdue').textContent=s.overdue;
   document.getElementById('opKCritical').textContent=s.critical;
   document.getElementById('opKWarning').textContent=s.warning;
@@ -1041,7 +1102,11 @@ function openOpModal(ln,idx){
 
   const containerNo=String(row[2]||'').trim();
   opModalCurrent={ln,idx,containerNo};
-  const dl=Number(row[13]);
+  const rawDl=row[13];
+  const risk=getRiskFromRaw(rawDl);
+  const dl=Number(rawDl);
+  const dueDate=parseReqDate(String(row[12]||''));
+  const dueDl=dueDate?Math.ceil((dueDate.getTime()-new Date().setHours(0,0,0,0))/86400000):null;
   const location=String(row[15]||'').trim();
   const depot=String(row[9]||'').trim()||'—';
   const ctype=String(row[18]||'').trim()||'—';
@@ -1051,11 +1116,12 @@ function openOpModal(ln,idx){
   const isFound=location&&location!=='Missing location';
 
   document.getElementById('omContainerNo').textContent=containerNo;
-  document.getElementById('omLine').textContent='Shipping line: '+ln;
-  const daysTxt=dl<0?Math.abs(dl)+' day'+(Math.abs(dl)!==1?'s':'')+' overdue':dl===0?'Expires today':dl===1?'Expires tomorrow':'Expires in '+dl+' days';
+  document.getElementById('omLine').textContent='Shipping line: '+ln+(risk==='prioritas'?'  ·  PRIORITAS':'');
+  const effectiveD=risk==='prioritas'?dueDl:dl;
+  const daysTxt=(effectiveD===null||isNaN(effectiveD))?'See due date':(effectiveD<0?Math.abs(effectiveD)+' day'+(Math.abs(effectiveD)!==1?'s':'')+' overdue':effectiveD===0?'Expires today':effectiveD===1?'Expires tomorrow':'Expires in '+effectiveD+' days');
   const omDays=document.getElementById('omDays');
-  omDays.textContent=daysTxt;
-  omDays.style.color=dl<=3?'var(--red)':dl<=5?'var(--amber)':'var(--green)';
+  omDays.textContent=(risk==='prioritas'?'⭑ Prioritas · ':'')+daysTxt;
+  omDays.style.color=risk==='prioritas'?'var(--purple)':(effectiveD!==null&&effectiveD<=3?'var(--red)':effectiveD!==null&&effectiveD<=5?'var(--amber)':'var(--green)');
   document.getElementById('omType').textContent=ctype;
   document.getElementById('omReqDate').textContent=reqDateFmt;
   document.getElementById('omDepot').textContent=depot;
@@ -1371,9 +1437,9 @@ function destroyChart(id){if(charts[id]){charts[id].destroy();delete charts[id];
 
 function renderCharts(s){
   destroyChart('risk');
-  const riskData=[s.overdue,s.critical,s.warning,s.monitor],riskTotal=riskData.reduce((a,b)=>a+b,0);
-  document.getElementById('riskLegend').innerHTML=[{label:'Overdue',color:'#E24B4A',val:s.overdue},{label:'Critical',color:'#854F0B',val:s.critical},{label:'Warning',color:'#BA7517',val:s.warning},{label:'Monitor',color:'#639922',val:s.monitor}].map(x=>`<span class="legend-item"><span class="legend-dot" style="background:${x.color};"></span>${x.label}: <strong>${x.val}</strong></span>`).join('');
-  if(riskTotal>0){charts.risk=new Chart(document.getElementById('chartRisk'),{type:'doughnut',data:{labels:['Overdue','Critical','Warning','Monitor'],datasets:[{data:riskData,backgroundColor:['#E24B4A','#854F0B','#BA7517','#639922'],borderWidth:2,borderColor:'#ffffff',hoverOffset:6}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false},tooltip:{callbacks:{label:ctx=>' '+ctx.label+': '+ctx.raw+' ('+Math.round(ctx.raw/riskTotal*100)+'%)'}}},cutout:'65%'}});}
+  const riskData=[s.prioritas,s.overdue,s.critical,s.warning,s.monitor],riskTotal=riskData.reduce((a,b)=>a+b,0);
+  document.getElementById('riskLegend').innerHTML=[{label:'Prioritas',color:'#6B3FA0',val:s.prioritas},{label:'Overdue',color:'#E24B4A',val:s.overdue},{label:'Critical',color:'#854F0B',val:s.critical},{label:'Warning',color:'#BA7517',val:s.warning},{label:'Monitor',color:'#639922',val:s.monitor}].map(x=>`<span class="legend-item"><span class="legend-dot" style="background:${x.color};"></span>${x.label}: <strong>${x.val}</strong></span>`).join('');
+  if(riskTotal>0){charts.risk=new Chart(document.getElementById('chartRisk'),{type:'doughnut',data:{labels:['Prioritas','Overdue','Critical','Warning','Monitor'],datasets:[{data:riskData,backgroundColor:['#6B3FA0','#E24B4A','#854F0B','#BA7517','#639922'],borderWidth:2,borderColor:'#ffffff',hoverOffset:6}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false},tooltip:{callbacks:{label:ctx=>' '+ctx.label+': '+ctx.raw+' ('+Math.round(ctx.raw/riskTotal*100)+'%)'}}},cutout:'65%'}});}
 
   destroyChart('line');
   const ll=[],lc=[],lcol=[];
@@ -1397,11 +1463,11 @@ function renderCharts(s){
 // ── DETAIL TABLE ──────────────────────────────────────
 function setDetailFilter(f){
   state.detailFilter=f;
-  ['rfAll','rfOverdue','rfCritical','rfWarning','rfMonitor'].forEach(id=>{const el=document.getElementById(id);if(el)el.classList.remove('active');});
-  const map={all:'rfAll',overdue:'rfOverdue',critical:'rfCritical',warning:'rfWarning',monitor:'rfMonitor'};
+  ['rfAll','rfPrioritas','rfOverdue','rfCritical','rfWarning','rfMonitor'].forEach(id=>{const el=document.getElementById(id);if(el)el.classList.remove('active');});
+  const map={all:'rfAll',prioritas:'rfPrioritas',overdue:'rfOverdue',critical:'rfCritical',warning:'rfWarning',monitor:'rfMonitor'};
   if(map[f])document.getElementById(map[f]).classList.add('active');
-  ['kpiOverdue','kpiCritical','kpiWarning','kpiMonitor'].forEach(id=>{const el=document.getElementById(id);if(el)el.classList.remove('active');});
-  const km={overdue:'kpiOverdue',critical:'kpiCritical',warning:'kpiWarning',monitor:'kpiMonitor'};
+  ['kpiPrioritas','kpiOverdue','kpiCritical','kpiWarning','kpiMonitor'].forEach(id=>{const el=document.getElementById(id);if(el)el.classList.remove('active');});
+  const km={prioritas:'kpiPrioritas',overdue:'kpiOverdue',critical:'kpiCritical',warning:'kpiWarning',monitor:'kpiMonitor'};
   if(km[f])document.getElementById(km[f]).classList.add('active');
   renderDetailTable();
   const db=document.getElementById('detailBody');if(db)db.closest('.card').scrollIntoView({behavior:'smooth',block:'start'});
@@ -1414,10 +1480,13 @@ function getDetailRows(){
       const containerNo=String(row[2]||'').trim();if(!containerNo)continue;
       if(!rowInDateRange(row,range))continue;
       const status=String(row[14]||'').trim();if(status==='Sudah keluar')continue;
-      const dl=Number(row[13]),risk=getRisk(dl);if(!risk)continue;
+      const rawDl=row[13],risk=getRiskFromRaw(rawDl);if(!risk)continue;
+      const dl=Number(rawDl);
+      const dueDate=parseReqDate(String(row[12]||''));
+      const dueDl=dueDate?Math.ceil((dueDate.getTime()-new Date().setHours(0,0,0,0))/86400000):null;
       const reqDateParsed=parseReqDate(String(row[11]||''));
       const reqDateFmt=reqDateParsed?reqDateParsed.getDate()+' '+MONTHS[reqDateParsed.getMonth()]+' '+reqDateParsed.getFullYear():(row[11]||'—');
-      rows.push({ln,containerNo,dl,risk,location:String(row[15]||'').trim()||'—',depot:String(row[9]||'').trim()||'—',ctype:String(row[18]||'').trim()||'—',reqDate:reqDateFmt,verified:String(row[20]||'').trim().toLowerCase()==='verified',actualLoc:String(row[21]||'').trim(),photo:String(row[22]||'').trim()});
+      rows.push({ln,containerNo,dl,dueDl,risk,location:String(row[15]||'').trim()||'—',depot:String(row[9]||'').trim()||'—',ctype:String(row[18]||'').trim()||'—',reqDate:reqDateFmt,verified:String(row[20]||'').trim().toLowerCase()==='verified',actualLoc:String(row[21]||'').trim(),photo:String(row[22]||'').trim()});
     }
   }
   return rows;
@@ -1430,20 +1499,27 @@ function renderDetailTable(){
   if(state.verifyFilter==='verified')rows=rows.filter(r=>r.verified);
   else if(state.verifyFilter==='unverified')rows=rows.filter(r=>!r.verified);
   if(search)rows=rows.filter(r=>r.containerNo.toLowerCase().includes(search)||r.depot.toLowerCase().includes(search)||r.location.toLowerCase().includes(search)||r.actualLoc.toLowerCase().includes(search)||r.ctype.toLowerCase().includes(search)||r.ln.toLowerCase().includes(search));
-  const order={overdue:0,critical:1,warning:2,monitor:3};
-  rows.sort((a,b)=>order[a.risk]-order[b.risk]||a.dl-b.dl);
+  const order={prioritas:-1,overdue:0,critical:1,warning:2,monitor:3};
+  rows.sort((a,b)=>order[a.risk]-order[b.risk]||((a.dl||0)-(b.dl||0)));
   const dc=document.getElementById('detailCount');if(dc)dc.textContent=rows.length+' container'+(rows.length!==1?'s':'');
-  const rb={overdue:'<span class="bo-risk-badge rb-overdue">Overdue</span>',critical:'<span class="bo-risk-badge rb-critical">Critical</span>',warning:'<span class="bo-risk-badge rb-warning">Warning</span>',monitor:'<span class="bo-risk-badge rb-monitor">Monitor</span>'};
+  const rb={prioritas:'<span class="bo-risk-badge rb-prioritas-bo">Prioritas</span>',overdue:'<span class="bo-risk-badge rb-overdue">Overdue</span>',critical:'<span class="bo-risk-badge rb-critical">Critical</span>',warning:'<span class="bo-risk-badge rb-warning">Warning</span>',monitor:'<span class="bo-risk-badge rb-monitor">Monitor</span>'};
   const locStyle=r=>r.location==='Missing location'||r.location==='—'?'color:var(--red);':'';
-  const daysStyle=r=>r.dl<0?'color:var(--red);font-weight:700;':r.dl<=3?'color:var(--orange);font-weight:600;':r.dl<=5?'color:var(--amber);font-weight:600;':'';
-  const daysLabel=r=>r.dl<0?r.dl+' days':r.dl===0?'Today':r.dl===1?'Tomorrow':r.dl+' days';
+  const daysStyle=r=>r.risk==='prioritas'?'color:var(--purple);font-weight:700;':r.dl<0?'color:var(--red);font-weight:700;':r.dl<=3?'color:var(--orange);font-weight:600;':r.dl<=5?'color:var(--amber);font-weight:600;':'';
+  const daysLabel=r=>{
+    if(r.risk==='prioritas'){
+      const d=r.dueDl;
+      if(d===null||isNaN(d))return'Prioritas';
+      return'Prioritas · '+(d<0?d+' days':d===0?'Today':d===1?'Tomorrow':d+' days');
+    }
+    return r.dl<0?r.dl+' days':r.dl===0?'Today':r.dl===1?'Tomorrow':r.dl+' days';
+  };
   const verifyCell=r=>r.verified?'<span class="bo-verified-badge"><i class="ti ti-circle-check-filled"></i> Verified</span>':'<span style="color:var(--text3);">—</span>';
   const actualCell=r=>r.actualLoc?`<span class="bo-actual-loc"><i class="ti ti-map-pin-check"></i> ${r.actualLoc}</span>`:'<span style="color:var(--text3);">—</span>';
   const photoCell=r=>r.photo?`<a href="${r.photo}" target="_blank" rel="noopener" class="bo-photo-link" title="Open photo"><img src="${driveThumbUrl(r.photo,100)}" alt="photo" loading="lazy"></a>`:'<span style="color:var(--text3);">—</span>';
   const db=document.getElementById('detailBody');
   if(!db)return;
   if(rows.length===0){db.innerHTML='<tr><td colspan="11" class="tbl-empty">No containers match this filter.</td></tr>';return;}
-  db.innerHTML=rows.map(r=>`<tr><td style="font-family:monospace;font-size:12px;">${r.containerNo}</td><td>${r.ln}</td><td>${r.ctype}</td><td>${r.depot}</td><td style="color:var(--text3);">${r.reqDate}</td><td style="${daysStyle(r)}">${daysLabel(r)}</td><td>${rb[r.risk]}</td><td style="${locStyle(r)}">${r.location}</td><td>${actualCell(r)}</td><td>${photoCell(r)}</td><td>${verifyCell(r)}</td></tr>`).join('');
+  db.innerHTML=rows.map(r=>`<tr class="${r.risk==='prioritas'?'row-prioritas':''}"><td style="font-family:monospace;font-size:12px;">${r.containerNo}</td><td>${r.ln}</td><td>${r.ctype}</td><td>${r.depot}</td><td style="color:var(--text3);">${r.reqDate}</td><td style="${daysStyle(r)}">${daysLabel(r)}</td><td>${rb[r.risk]}</td><td style="${locStyle(r)}">${r.location}</td><td>${actualCell(r)}</td><td>${photoCell(r)}</td><td>${verifyCell(r)}</td></tr>`).join('');
 }
 
 function setVerifyFilter(f){
@@ -1456,8 +1532,8 @@ function setVerifyFilter(f){
 }
 
 // ── EXPORT ────────────────────────────────────────────
-function buildExportData(){const lines=getLines(),range=getDateRange(),header=['Shipping Line','Container No','Type','Depot','Req Date','Days Left','Risk','Status','Location'],data=[header];for(const ln of lines){for(const row of(state[ln]||[])){const c=String(row[2]||'').trim();if(!c||!rowInDateRange(row,range))continue;const dl=Number(row[13]),st=String(row[14]||'').trim(),risk=st==='Sudah keluar'?'Completed':(getRisk(dl)||'OK');data.push([ln,c,String(row[18]||'').trim()||'—',String(row[9]||'').trim()||'—',String(row[11]||'').trim()||'—',dl,risk,st,String(row[15]||'').trim()||'—']);}}return data;}
-function buildDetailExportData(){const search=(document.getElementById('detailSearch').value||'').toLowerCase().trim();let rows=getDetailRows();if(state.detailFilter!=='all')rows=rows.filter(r=>r.risk===state.detailFilter);if(state.verifyFilter==='verified')rows=rows.filter(r=>r.verified);else if(state.verifyFilter==='unverified')rows=rows.filter(r=>!r.verified);if(search)rows=rows.filter(r=>r.containerNo.toLowerCase().includes(search)||r.depot.toLowerCase().includes(search)||r.location.toLowerCase().includes(search));const order={overdue:0,critical:1,warning:2,monitor:3};rows.sort((a,b)=>order[a.risk]-order[b.risk]||a.dl-b.dl);return[['Shipping Line','Container No','Type','Depot','Req Date','Days Left','Risk','Location','Actual Location (OPS)','Photo URL','Status by OPS'],...rows.map(r=>[r.ln,r.containerNo,r.ctype,r.depot,r.reqDate,r.dl,r.risk,r.location,r.actualLoc||'',r.photo||'',r.verified?'Verified':''])];}
+function buildExportData(){const lines=getLines(),range=getDateRange(),header=['Shipping Line','Container No','Type','Depot','Req Date','Days Left','Risk','Status','Location'],data=[header];for(const ln of lines){for(const row of(state[ln]||[])){const c=String(row[2]||'').trim();if(!c||!rowInDateRange(row,range))continue;const rawDl=row[13],dl=Number(rawDl),st=String(row[14]||'').trim();const riskKey=getRiskFromRaw(rawDl);const risk=st==='Sudah keluar'?'Completed':(riskKey?(riskKey.charAt(0).toUpperCase()+riskKey.slice(1)):'OK');data.push([ln,c,String(row[18]||'').trim()||'—',String(row[9]||'').trim()||'—',String(row[11]||'').trim()||'—',riskKey==='prioritas'?'Prioritas':dl,risk,st,String(row[15]||'').trim()||'—']);}}return data;}
+function buildDetailExportData(){const search=(document.getElementById('detailSearch').value||'').toLowerCase().trim();let rows=getDetailRows();if(state.detailFilter!=='all')rows=rows.filter(r=>r.risk===state.detailFilter);if(state.verifyFilter==='verified')rows=rows.filter(r=>r.verified);else if(state.verifyFilter==='unverified')rows=rows.filter(r=>!r.verified);if(search)rows=rows.filter(r=>r.containerNo.toLowerCase().includes(search)||r.depot.toLowerCase().includes(search)||r.location.toLowerCase().includes(search));const order={prioritas:-1,overdue:0,critical:1,warning:2,monitor:3};rows.sort((a,b)=>order[a.risk]-order[b.risk]||((a.dl||0)-(b.dl||0)));return[['Shipping Line','Container No','Type','Depot','Req Date','Days Left','Risk','Location','Actual Location (OPS)','Photo URL','Status by OPS'],...rows.map(r=>[r.ln,r.containerNo,r.ctype,r.depot,r.reqDate,r.risk==='prioritas'?'Prioritas':r.dl,r.risk,r.location,r.actualLoc||'',r.photo||'',r.verified?'Verified':''])];}
 function toCSV(data){return data.map(r=>r.map(v=>'"'+String(v).replace(/"/g,'""')+'"').join(',')).join('\n');}
 function downloadFile(content,filename,mime){const b=new Blob([content],{type:mime}),a=document.createElement('a');a.href=URL.createObjectURL(b);a.download=filename;a.click();URL.revokeObjectURL(a.href);}
 function dateStr(){const d=new Date();return d.getFullYear()+String(d.getMonth()+1).padStart(2,'0')+String(d.getDate()).padStart(2,'0');}
@@ -1479,7 +1555,7 @@ function render(){
     const bsub=document.getElementById('boHeaderSub');if(bsub)bsub.textContent=hasData?fmtNow():'Waiting for data...';
     const hcr=document.getElementById('hCompRate');if(hcr)hcr.textContent=hasData?s.compRate+'%':'—';
     const setEl=(id,val)=>{const el=document.getElementById(id);if(el)el.textContent=val;};
-    setEl('kOverdue',hasData?s.overdue:'—');setEl('kCritical',hasData?s.critical:'—');setEl('kWarning',hasData?s.warning:'—');setEl('kMonitor',hasData?s.monitor:'—');
+    setEl('kPrioritas',hasData?s.prioritas:'—');setEl('kOverdue',hasData?s.overdue:'—');setEl('kCritical',hasData?s.critical:'—');setEl('kWarning',hasData?s.warning:'—');setEl('kMonitor',hasData?s.monitor:'—');
     setEl('sDalamProses',hasData?s.dalamProses:'—');setEl('sSudahKeluar',hasData?s.sudahKeluar:'—');setEl('sTotal',hasData?s.total:'—');
     setEl('sLocFound',hasData?s.locFound:'—');setEl('sLocMissing',hasData?s.locMissing:'—');setEl('sCompPct',hasData?s.compRate+'%':'—%');
     const cb=document.getElementById('compBar');if(cb)cb.style.width=hasData?s.compRate+'%':'0%';
@@ -1493,7 +1569,8 @@ function render(){
 
     let ins='';
     if(hasData){
-      if(s.blindSpot>0)ins+=`<div class="insight insight-danger"><i class="ti ti-alert-triangle"></i><div><strong>${s.blindSpot} container${s.blindSpot>1?'s are':' is'} overdue/critical with unknown location</strong> — immediate tracing required.</div></div>`;
+      if(s.prioritas>0)ins+=`<div class="insight insight-prioritas"><i class="ti ti-star-filled"></i><div><strong>${s.prioritas} container${s.prioritas>1?'s are':' is'} flagged Prioritas</strong> — these need attention regardless of their due date.</div></div>`;
+      if(s.blindSpot>0)ins+=`<div class="insight insight-danger"><i class="ti ti-alert-triangle"></i><div><strong>${s.blindSpot} container${s.blindSpot>1?'s are':' is'} overdue/critical/prioritas with unknown location</strong> — immediate tracing required.</div></div>`;
       if(s.todayCount>0)ins+=`<div class="insight insight-danger"><i class="ti ti-clock"></i><div><strong>${s.todayCount} container${s.todayCount>1?'s expire':'expires'} today</strong> — escalate to depot immediately.</div></div>`;
       if(s.tomorrowCount>0)ins+=`<div class="insight insight-warning"><i class="ti ti-calendar-event"></i><div><strong>${s.tomorrowCount} container${s.tomorrowCount>1?'s expire':' expires'} tomorrow</strong> — confirm redelivery plan today.</div></div>`;
       if(s.overdue>0&&s.blindSpot===0)ins+=`<div class="insight insight-success"><i class="ti ti-check"></i><div>All overdue containers have known locations — coordinate urgent redelivery with depot.</div></div>`;
@@ -1505,11 +1582,11 @@ function render(){
 
     const rl=s.riskLoc;
     const rlb=document.getElementById('riskLocBody');
-    if(rlb)rlb.innerHTML=hasData?`<tr><td class="col-overdue" style="font-weight:600;">Overdue</td><td>${s.overdue}</td><td class="col-green">${rl.overdue.f}</td><td class="col-red">${rl.overdue.m}</td></tr><tr><td class="col-critical" style="font-weight:600;">Critical</td><td>${s.critical}</td><td class="col-green">${rl.critical.f}</td><td class="col-red">${rl.critical.m}</td></tr><tr><td class="col-warning" style="font-weight:600;">Warning</td><td>${s.warning}</td><td class="col-green">${rl.warning.f}</td><td class="col-red">${rl.warning.m}</td></tr><tr><td class="col-monitor" style="font-weight:600;">Monitor</td><td>${s.monitor}</td><td class="col-green">${rl.monitor.f}</td><td class="col-red">${rl.monitor.m}</td></tr>`:'<tr><td colspan="4" class="tbl-empty">—</td></tr>';
+    if(rlb)rlb.innerHTML=hasData?`<tr><td class="col-prioritas" style="font-weight:600;">Prioritas</td><td>${s.prioritas}</td><td class="col-green">${rl.prioritas.f}</td><td class="col-red">${rl.prioritas.m}</td></tr><tr><td class="col-overdue" style="font-weight:600;">Overdue</td><td>${s.overdue}</td><td class="col-green">${rl.overdue.f}</td><td class="col-red">${rl.overdue.m}</td></tr><tr><td class="col-critical" style="font-weight:600;">Critical</td><td>${s.critical}</td><td class="col-green">${rl.critical.f}</td><td class="col-red">${rl.critical.m}</td></tr><tr><td class="col-warning" style="font-weight:600;">Warning</td><td>${s.warning}</td><td class="col-green">${rl.warning.f}</td><td class="col-red">${rl.warning.m}</td></tr><tr><td class="col-monitor" style="font-weight:600;">Monitor</td><td>${s.monitor}</td><td class="col-green">${rl.monitor.f}</td><td class="col-red">${rl.monitor.m}</td></tr>`:'<tr><td colspan="4" class="tbl-empty">—</td></tr>';
 
     let slRows='';
-    Object.entries(s.slSummary).forEach(([ln,v])=>{const comp=v.total>0?(v.sudahKeluar/v.total*100).toFixed(1):'0.0';const bc=parseFloat(comp)>=70?'badge-good':parseFloat(comp)>=40?'badge-warning':'badge-critical';slRows+=`<tr><td style="font-weight:600;">${ln}</td><td>${v.total}</td><td>${v.dalamProses}</td><td class="col-green">${v.sudahKeluar}</td><td class="col-overdue">${v.overdue}</td><td class="col-critical">${v.critical}</td><td class="col-warning">${v.warning}</td><td class="col-monitor">${v.monitor}</td><td><span class="badge ${bc}">${comp}%</span></td></tr>`;});
-    const slb=document.getElementById('shippingLineBody');if(slb)slb.innerHTML=slRows||'<tr><td colspan="9" class="tbl-empty">—</td></tr>';
+    Object.entries(s.slSummary).forEach(([ln,v])=>{const comp=v.total>0?(v.sudahKeluar/v.total*100).toFixed(1):'0.0';const bc=parseFloat(comp)>=70?'badge-good':parseFloat(comp)>=40?'badge-warning':'badge-critical';slRows+=`<tr><td style="font-weight:600;">${ln}</td><td>${v.total}</td><td>${v.dalamProses}</td><td class="col-green">${v.sudahKeluar}</td><td class="col-prioritas">${v.prioritas}</td><td class="col-overdue">${v.overdue}</td><td class="col-critical">${v.critical}</td><td class="col-warning">${v.warning}</td><td class="col-monitor">${v.monitor}</td><td><span class="badge ${bc}">${comp}%</span></td></tr>`;});
+    const slb=document.getElementById('shippingLineBody');if(slb)slb.innerHTML=slRows||'<tr><td colspan="10" class="tbl-empty">—</td></tr>';
 
     renderCharts(s);
     renderDetailTable();
