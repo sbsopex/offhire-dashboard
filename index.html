@@ -456,6 +456,10 @@ footer { text-align:center; font-size:11px; color:var(--text3); padding-top:20px
           <div class="op-field-lbl">Last known location</div>
           <div class="op-field-val" id="omLocation">—</div>
         </div>
+        <div class="op-field span2">
+          <div class="op-field-lbl">Last updated by OPS</div>
+          <div class="op-field-val" id="omUpdated" style="color:var(--text2);">—</div>
+        </div>
       </div>
 
       <div class="op-extra">
@@ -634,6 +638,22 @@ footer { text-align:center; font-size:11px; color:var(--text3); padding-top:20px
     </div>
   </div>
 
+  <div class="card full">
+    <div class="card-title"><i class="ti ti-chart-histogram"></i> Daily productivity (OPS updates)</div>
+    <div style="display:flex;gap:24px;margin-bottom:14px;flex-wrap:wrap;">
+      <div>
+        <div style="font-size:28px;font-weight:700;color:var(--navy);" id="prodToday">—</div>
+        <div style="font-size:10px;letter-spacing:1px;color:var(--text3);text-transform:uppercase;">Updated today</div>
+      </div>
+      <div>
+        <div style="font-size:28px;font-weight:700;color:var(--navy);" id="prodWeek">—</div>
+        <div style="font-size:10px;letter-spacing:1px;color:var(--text3);text-transform:uppercase;">Updated last 7 days</div>
+      </div>
+    </div>
+    <div class="chart-wrap" style="height:200px;"><canvas id="chartProductivity" role="img" aria-label="Daily productivity bar chart"></canvas></div>
+    <div style="font-size:11px;color:var(--text3);margin-top:8px;">Counts any OPS action (location set, photo added, or verify/unverify) on a container, based on the column X update timestamp. Reflects the current line filter above, independent of the request-date filter.</div>
+  </div>
+
   <div class="row2">
     <div class="card">
       <div class="card-title"><i class="ti ti-building-warehouse"></i> Depot activity</div>
@@ -695,9 +715,9 @@ footer { text-align:center; font-size:11px; color:var(--text3); padding-top:20px
     <div class="tbl-wrap"><table>
       <thead><tr>
         <th style="text-align:left;">Container No</th>
-        <th>Line</th><th>Type</th><th>Depot</th><th>Req Date</th><th>Days Left</th><th>Risk</th><th>Location</th><th>Actual Loc (OPS)</th><th>Photo</th><th>Status by OPS</th>
+        <th>Line</th><th>Type</th><th>Depot</th><th>Req Date</th><th>Days Left</th><th>Risk</th><th>Location</th><th>Actual Loc (OPS)</th><th>Photo</th><th>Status by OPS</th><th>Last Updated</th>
       </tr></thead>
-      <tbody id="detailBody"><tr><td colspan="11" class="tbl-empty">Loading...</td></tr></tbody>
+      <tbody id="detailBody"><tr><td colspan="12" class="tbl-empty">Loading...</td></tr></tbody>
     </table></div>
   </div>
 
@@ -794,6 +814,22 @@ function parseReqDate(val) {
   const m2=s.match(/^(\d{4})-(\d{2})-(\d{2})$/);
   if (m2) return new Date(parseInt(m2[1]),parseInt(m2[2])-1,parseInt(m2[3]));
   const d=new Date(s); return isNaN(d.getTime())?null:d;
+}
+// Parses the column X "Status update date" cell, which (since it's written
+// by Apps Script as new Date()) carries a date+time, not just a date. Reuses
+// the same loose fallback as parseReqDate (new Date(s)) since gviz delivers
+// it as whatever text the cell's number format renders to.
+function parseUpdateDate(val) {
+  if (!val) return null;
+  const s=String(val).trim();
+  if (!s) return null;
+  const d=new Date(s);
+  return isNaN(d.getTime())?null:d;
+}
+function fmtDateTime(d) {
+  if(!d) return '—';
+  return d.getDate()+' '+MONTHS[d.getMonth()]+' '+d.getFullYear()+', '+
+    String(d.getHours()).padStart(2,'0')+':'+String(d.getMinutes()).padStart(2,'0');
 }
 function startOf(unit,d){const r=new Date(d);if(unit==='day'){r.setHours(0,0,0,0);}else if(unit==='week'){r.setDate(r.getDate()-r.getDay());r.setHours(0,0,0,0);}else if(unit==='month'){r.setDate(1);r.setHours(0,0,0,0);}return r;}
 function endOf(unit,d){const r=new Date(d);if(unit==='day'){r.setHours(23,59,59,999);}else if(unit==='week'){r.setDate(r.getDate()+(6-r.getDay()));r.setHours(23,59,59,999);}else if(unit==='month'){r.setMonth(r.getMonth()+1,0);r.setHours(23,59,59,999);}return r;}
@@ -948,6 +984,59 @@ function computeStats(){
   return{prioritas,overdue,critical,warning,monitor,dalamProses,sudahKeluar,total,compRate,locFound,locMissing,blindSpot,todayCount,tomorrowCount,riskLoc,slSummary,depotMap,ctypeMap,health};
 }
 
+// ── PRODUCTIVITY STATS (column X — "Status update date") ─────────────
+// Counts OPS write activity (setLocation / uploadPhoto / verify / unverify)
+// per calendar day, based on the row's last-updated timestamp. Respects the
+// current line filter (state.filter / getLines()) like the rest of the
+// dashboard, but is intentionally NOT filtered by the request-date filter —
+// "when was this offhire requested" and "when did OPS last touch it" are two
+// different timelines, and productivity should reflect the latter regardless
+// of which request-date window is selected above.
+function computeProductivityStats(){
+  const lines=getLines();
+  const dayCounts={}; // 'YYYY-MM-DD' -> count
+  let updatedToday=0,updatedWeek=0;
+  const today=new Date();today.setHours(0,0,0,0);
+  const sevenDaysAgo=new Date(today);sevenDaysAgo.setDate(sevenDaysAgo.getDate()-6); // window includes today = 7 days
+  for(const ln of lines){
+    for(const row of(state[ln]||[])){
+      if(!String(row[2]||'').trim())continue;
+      const upd=parseUpdateDate(row[23]); // column X
+      if(!upd)continue;
+      const d=new Date(upd);d.setHours(0,0,0,0);
+      const key=d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');
+      dayCounts[key]=(dayCounts[key]||0)+1;
+      if(d.getTime()===today.getTime())updatedToday++;
+      if(d>=sevenDaysAgo&&d<=today)updatedWeek++;
+    }
+  }
+  const trendLabels=[],trendValues=[];
+  for(let i=6;i>=0;i--){
+    const d=new Date(today);d.setDate(d.getDate()-i);
+    const key=d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');
+    trendLabels.push(d.getDate()+' '+MONTHS[d.getMonth()]);
+    trendValues.push(dayCounts[key]||0);
+  }
+  return{updatedToday,updatedWeek,trendLabels,trendValues};
+}
+
+function renderProductivityCard(){
+  const loaded=hasAnyData();
+  const p=loaded?computeProductivityStats():{updatedToday:0,updatedWeek:0,trendLabels:[],trendValues:[]};
+  const setEl=(id,val)=>{const el=document.getElementById(id);if(el)el.textContent=val;};
+  setEl('prodToday',loaded?p.updatedToday:'—');
+  setEl('prodWeek',loaded?p.updatedWeek:'—');
+  destroyChart('productivity');
+  const canvas=document.getElementById('chartProductivity');
+  if(loaded&&canvas){
+    charts.productivity=new Chart(canvas,{
+      type:'bar',
+      data:{labels:p.trendLabels,datasets:[{label:'Containers updated',data:p.trendValues,backgroundColor:'#378ADD',borderRadius:4}]},
+      options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false},tooltip:{callbacks:{label:ctx=>' '+ctx.raw+' container'+(ctx.raw!==1?'s':'')+' updated'}}},scales:{y:{beginAtZero:true,ticks:{precision:0,font:{size:11}},grid:{color:'#e8edf3'}},x:{ticks:{font:{size:11}},grid:{display:false}}}}
+    });
+  }
+}
+
 // ── OPERATOR VIEW ─────────────────────────────────────
 function setOpFilter(f){
   state.opFilter=f;
@@ -993,12 +1082,13 @@ function renderOpCards(){
       const verified=String(row[20]||'').trim().toLowerCase()==='verified';
       const actualLoc=String(row[21]||'').trim();
       const photo=String(row[22]||'').trim();
+      const updated=parseUpdateDate(row[23]);
       // Real due-date countdown, computed independently of the Prioritas
       // override on column N, so Prioritas cards can still show "Expires
       // in X days" using the Due date in column M (index 12) + today.
       const dueDate=parseReqDate(String(row[12]||''));
       const dueDl=dueDate?Math.ceil((dueDate.getTime()-new Date().setHours(0,0,0,0))/86400000):null;
-      rows.push({ln,idx:i,containerNo,dl,dueDl,risk,location,depot,ctype,reqDate:reqDateFmt,isFound,verified,actualLoc,photo});
+      rows.push({ln,idx:i,containerNo,dl,dueDl,risk,location,depot,ctype,reqDate:reqDateFmt,isFound,verified,actualLoc,photo,updated});
     }
   }
 
@@ -1079,6 +1169,10 @@ function renderOpCards(){
           <div class="op-field-lbl">Photo</div>
           <div class="op-field-val op-photo-chip"><i class="ti ti-camera"></i> Attached</div>
         </div>`:''}
+        ${r.updated?`<div class="op-field span2">
+          <div class="op-field-lbl">Last updated</div>
+          <div class="op-field-val" style="color:var(--text2);font-weight:600;">${fmtDateTime(r.updated)}</div>
+        </div>`:''}
       </div>
       <div class="op-card-tap"><i class="ti ti-hand-click"></i> Tap to view &amp; verify location</div>
     </div>`).join('');
@@ -1128,6 +1222,8 @@ function openOpModal(ln,idx){
   const omLoc=document.getElementById('omLocation');
   omLoc.textContent=isFound?location:'⚠ Missing location';
   omLoc.className='op-field-val'+(isFound?'':' missing');
+  const omUpdated=document.getElementById('omUpdated');
+  if(omUpdated)omUpdated.textContent=fmtDateTime(parseUpdateDate(row[23]));
 
   setVerifyUi(verified?'done':'idle');
   document.getElementById('omVerifyErr').textContent='';
@@ -1226,10 +1322,16 @@ async function verifyLocation(action){
     await postToWebApp({line:ln,containerNo:containerNo,action:action});
 
     // Update local state + cache so the UI reflects it immediately,
-    // even before the next full sheet sync
+    // even before the next full sheet sync. The backend is expected to
+    // also stamp column X (Status update date) on every write — see the
+    // doPost patch notes; we optimistically mirror "now" here too so the
+    // operator view doesn't have to wait for the next sync to show it.
     row[20]=action==='unverify'?'':'Verified';
+    row[23]=new Date().toString();
     saveDataCache();
     setVerifyUi(action==='unverify'?'idle':'done');
+    const omUpdated=document.getElementById('omUpdated');
+    if(omUpdated)omUpdated.textContent=fmtDateTime(parseUpdateDate(row[23]));
     renderOpCards();
     showOpToast(action==='unverify'?(containerNo+' \u2014 verification removed'):(containerNo+' verified'));
   }catch(e){
@@ -1391,6 +1493,10 @@ async function saveExtras(){
       setModalPhoto(data.photoUrl);
       saved.push('photo');
     }
+    // Mirror the update timestamp locally (backend should also stamp col X)
+    row[23]=new Date().toString();
+    const omUpdated=document.getElementById('omUpdated');
+    if(omUpdated)omUpdated.textContent=fmtDateTime(parseUpdateDate(row[23]));
     saveDataCache();
     renderOpCards();
     showOpToast(containerNo+': '+saved.join(' + ')+' saved');
@@ -1486,7 +1592,7 @@ function getDetailRows(){
       const dueDl=dueDate?Math.ceil((dueDate.getTime()-new Date().setHours(0,0,0,0))/86400000):null;
       const reqDateParsed=parseReqDate(String(row[11]||''));
       const reqDateFmt=reqDateParsed?reqDateParsed.getDate()+' '+MONTHS[reqDateParsed.getMonth()]+' '+reqDateParsed.getFullYear():(row[11]||'—');
-      rows.push({ln,containerNo,dl,dueDl,risk,location:String(row[15]||'').trim()||'—',depot:String(row[9]||'').trim()||'—',ctype:String(row[18]||'').trim()||'—',reqDate:reqDateFmt,verified:String(row[20]||'').trim().toLowerCase()==='verified',actualLoc:String(row[21]||'').trim(),photo:String(row[22]||'').trim()});
+      rows.push({ln,containerNo,dl,dueDl,risk,location:String(row[15]||'').trim()||'—',depot:String(row[9]||'').trim()||'—',ctype:String(row[18]||'').trim()||'—',reqDate:reqDateFmt,verified:String(row[20]||'').trim().toLowerCase()==='verified',actualLoc:String(row[21]||'').trim(),photo:String(row[22]||'').trim(),updated:parseUpdateDate(row[23])});
     }
   }
   return rows;
@@ -1516,10 +1622,11 @@ function renderDetailTable(){
   const verifyCell=r=>r.verified?'<span class="bo-verified-badge"><i class="ti ti-circle-check-filled"></i> Verified</span>':'<span style="color:var(--text3);">—</span>';
   const actualCell=r=>r.actualLoc?`<span class="bo-actual-loc"><i class="ti ti-map-pin-check"></i> ${r.actualLoc}</span>`:'<span style="color:var(--text3);">—</span>';
   const photoCell=r=>r.photo?`<a href="${r.photo}" target="_blank" rel="noopener" class="bo-photo-link" title="Open photo"><img src="${driveThumbUrl(r.photo,100)}" alt="photo" loading="lazy"></a>`:'<span style="color:var(--text3);">—</span>';
+  const updatedCell=r=>r.updated?`<span style="color:var(--text2);font-size:11px;white-space:nowrap;">${fmtDateTime(r.updated)}</span>`:'<span style="color:var(--text3);">—</span>';
   const db=document.getElementById('detailBody');
   if(!db)return;
-  if(rows.length===0){db.innerHTML='<tr><td colspan="11" class="tbl-empty">No containers match this filter.</td></tr>';return;}
-  db.innerHTML=rows.map(r=>`<tr class="${r.risk==='prioritas'?'row-prioritas':''}"><td style="font-family:monospace;font-size:12px;">${r.containerNo}</td><td>${r.ln}</td><td>${r.ctype}</td><td>${r.depot}</td><td style="color:var(--text3);">${r.reqDate}</td><td style="${daysStyle(r)}">${daysLabel(r)}</td><td>${rb[r.risk]}</td><td style="${locStyle(r)}">${r.location}</td><td>${actualCell(r)}</td><td>${photoCell(r)}</td><td>${verifyCell(r)}</td></tr>`).join('');
+  if(rows.length===0){db.innerHTML='<tr><td colspan="12" class="tbl-empty">No containers match this filter.</td></tr>';return;}
+  db.innerHTML=rows.map(r=>`<tr class="${r.risk==='prioritas'?'row-prioritas':''}"><td style="font-family:monospace;font-size:12px;">${r.containerNo}</td><td>${r.ln}</td><td>${r.ctype}</td><td>${r.depot}</td><td style="color:var(--text3);">${r.reqDate}</td><td style="${daysStyle(r)}">${daysLabel(r)}</td><td>${rb[r.risk]}</td><td style="${locStyle(r)}">${r.location}</td><td>${actualCell(r)}</td><td>${photoCell(r)}</td><td>${verifyCell(r)}</td><td>${updatedCell(r)}</td></tr>`).join('');
 }
 
 function setVerifyFilter(f){
@@ -1533,7 +1640,7 @@ function setVerifyFilter(f){
 
 // ── EXPORT ────────────────────────────────────────────
 function buildExportData(){const lines=getLines(),range=getDateRange(),header=['Shipping Line','Container No','Type','Depot','Req Date','Days Left','Risk','Status','Location'],data=[header];for(const ln of lines){for(const row of(state[ln]||[])){const c=String(row[2]||'').trim();if(!c||!rowInDateRange(row,range))continue;const rawDl=row[13],dl=Number(rawDl),st=String(row[14]||'').trim();const riskKey=getRiskFromRaw(rawDl);const risk=st==='Sudah keluar'?'Completed':(riskKey?(riskKey.charAt(0).toUpperCase()+riskKey.slice(1)):'OK');data.push([ln,c,String(row[18]||'').trim()||'—',String(row[9]||'').trim()||'—',String(row[11]||'').trim()||'—',riskKey==='prioritas'?'Prioritas':dl,risk,st,String(row[15]||'').trim()||'—']);}}return data;}
-function buildDetailExportData(){const search=(document.getElementById('detailSearch').value||'').toLowerCase().trim();let rows=getDetailRows();if(state.detailFilter!=='all')rows=rows.filter(r=>r.risk===state.detailFilter);if(state.verifyFilter==='verified')rows=rows.filter(r=>r.verified);else if(state.verifyFilter==='unverified')rows=rows.filter(r=>!r.verified);if(search)rows=rows.filter(r=>r.containerNo.toLowerCase().includes(search)||r.depot.toLowerCase().includes(search)||r.location.toLowerCase().includes(search));const order={prioritas:-1,overdue:0,critical:1,warning:2,monitor:3};rows.sort((a,b)=>order[a.risk]-order[b.risk]||((a.dl||0)-(b.dl||0)));return[['Shipping Line','Container No','Type','Depot','Req Date','Days Left','Risk','Location','Actual Location (OPS)','Photo URL','Status by OPS'],...rows.map(r=>[r.ln,r.containerNo,r.ctype,r.depot,r.reqDate,r.risk==='prioritas'?'Prioritas':r.dl,r.risk,r.location,r.actualLoc||'',r.photo||'',r.verified?'Verified':''])];}
+function buildDetailExportData(){const search=(document.getElementById('detailSearch').value||'').toLowerCase().trim();let rows=getDetailRows();if(state.detailFilter!=='all')rows=rows.filter(r=>r.risk===state.detailFilter);if(state.verifyFilter==='verified')rows=rows.filter(r=>r.verified);else if(state.verifyFilter==='unverified')rows=rows.filter(r=>!r.verified);if(search)rows=rows.filter(r=>r.containerNo.toLowerCase().includes(search)||r.depot.toLowerCase().includes(search)||r.location.toLowerCase().includes(search));const order={prioritas:-1,overdue:0,critical:1,warning:2,monitor:3};rows.sort((a,b)=>order[a.risk]-order[b.risk]||((a.dl||0)-(b.dl||0)));return[['Shipping Line','Container No','Type','Depot','Req Date','Days Left','Risk','Location','Actual Location (OPS)','Photo URL','Status by OPS','Last Updated'],...rows.map(r=>[r.ln,r.containerNo,r.ctype,r.depot,r.reqDate,r.risk==='prioritas'?'Prioritas':r.dl,r.risk,r.location,r.actualLoc||'',r.photo||'',r.verified?'Verified':'',r.updated?fmtDateTime(r.updated):''])];}
 function toCSV(data){return data.map(r=>r.map(v=>'"'+String(v).replace(/"/g,'""')+'"').join(',')).join('\n');}
 function downloadFile(content,filename,mime){const b=new Blob([content],{type:mime}),a=document.createElement('a');a.href=URL.createObjectURL(b);a.download=filename;a.click();URL.revokeObjectURL(a.href);}
 function dateStr(){const d=new Date();return d.getFullYear()+String(d.getMonth()+1).padStart(2,'0')+String(d.getDate()).padStart(2,'0');}
@@ -1589,6 +1696,7 @@ function render(){
     const slb=document.getElementById('shippingLineBody');if(slb)slb.innerHTML=slRows||'<tr><td colspan="10" class="tbl-empty">—</td></tr>';
 
     renderCharts(s);
+    renderProductivityCard();
     renderDetailTable();
   }
 }
