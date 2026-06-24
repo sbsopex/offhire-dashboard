@@ -237,6 +237,14 @@ select { font-family:inherit; font-size:12px; padding:5px 12px; border-radius:10
 .kpi-sub { font-size:11px; color:var(--text3); margin-top:4px; }
 .col-prioritas{color:var(--purple);} .col-overdue{color:var(--red);} .col-critical{color:var(--orange);} .col-warning{color:var(--amber);} .col-monitor{color:var(--green);} .col-green{color:var(--green);} .col-red{color:var(--red);}
 
+.tab-nav { display:flex; gap:6px; margin-bottom:14px; flex-wrap:wrap; }
+.tabbtn { display:flex; align-items:center; gap:6px; font-size:12px; font-weight:600; font-family:inherit; padding:7px 16px; border-radius:100px; border:1px solid var(--border); background:var(--surface); color:var(--text2); cursor:pointer; transition:all 0.15s; white-space:nowrap; }
+.tabbtn i { font-size:15px; }
+.tabbtn:hover { border-color:var(--navy); color:var(--navy); }
+.tabbtn.active { background:var(--navy); color:#fff; border-color:var(--navy); }
+.tab-content { display:none; }
+.tab-content.active { display:block; }
+
 .row2 { display:grid; grid-template-columns:1fr 1fr; gap:14px; margin-bottom:14px; }
 .full { margin-bottom:14px; }
 .card { background:var(--surface); border:1px solid var(--border); border-radius:var(--radius); padding:16px 18px; }
@@ -584,164 +592,179 @@ footer { text-align:center; font-size:11px; color:var(--text3); padding-top:20px
     </div>
   </div>
 
-  <div class="card full">
-    <div class="card-title"><i class="ti ti-bolt"></i> Operational insights</div>
-    <div id="insightsBody"><div class="insight insight-neutral"><i class="ti ti-loader-2"></i> Loading live data...</div></div>
+  <div class="tab-nav">
+    <button class="tabbtn active" id="tabBtnOverview" onclick="switchTab('overview')"><i class="ti ti-layout-dashboard"></i> Overview</button>
+    <button class="tabbtn" id="tabBtnProductivity" onclick="switchTab('productivity')"><i class="ti ti-chart-histogram"></i> Productivity</button>
+    <button class="tabbtn" id="tabBtnAnalytics" onclick="switchTab('analytics')"><i class="ti ti-chart-bar"></i> Analytics</button>
+    <button class="tabbtn" id="tabBtnDetail" onclick="switchTab('detail')"><i class="ti ti-table"></i> Container detail</button>
   </div>
 
-  <div class="row2">
-    <div class="card">
-      <div class="card-title"><i class="ti ti-chart-donut"></i> Risk category breakdown</div>
-      <div class="chart-legend" id="riskLegend"></div>
-      <div class="chart-wrap" style="height:220px;"><canvas id="chartRisk" role="img" aria-label="Risk category donut chart"></canvas></div>
+  <div class="tab-content active" id="tabOverview">
+    <div class="card full">
+      <div class="card-title"><i class="ti ti-bolt"></i> Operational insights</div>
+      <div id="insightsBody"><div class="insight insight-neutral"><i class="ti ti-loader-2"></i> Loading live data...</div></div>
     </div>
-    <div class="card">
-      <div class="card-title"><i class="ti ti-chart-bar"></i> Completion by shipping line</div>
-      <div class="chart-legend" id="lineLegend"></div>
-      <div class="chart-wrap" style="height:220px;"><canvas id="chartLine" role="img" aria-label="Completion by line bar chart"></canvas></div>
+
+    <div class="row2">
+      <div class="card">
+        <div class="card-title"><i class="ti ti-chart-donut-3"></i> Container status</div>
+        <div class="stat-row"><span class="stat-lbl">Dalam Proses</span><span class="stat-val" id="sDalamProses">—</span></div>
+        <div class="stat-row"><span class="stat-lbl">Sudah Keluar</span><span class="stat-val col-green" id="sSudahKeluar">—</span></div>
+        <div class="stat-row"><span class="stat-lbl">Total containers</span><span class="stat-val" id="sTotal">—</span></div>
+        <div class="stat-row" style="margin-top:8px;border-top:2px solid var(--border);padding-top:10px;">
+          <span class="stat-lbl">Location found</span><span class="stat-val col-green" id="sLocFound">—</span>
+        </div>
+        <div class="stat-row"><span class="stat-lbl">Location missing</span><span class="stat-val col-red" id="sLocMissing">—</span></div>
+        <div class="prog-wrap">
+          <div class="prog-labels"><span>Completion rate</span><span id="sCompPct">—%</span></div>
+          <div class="prog-bg"><div class="prog-fill" id="compBar" style="background:var(--green);width:0%;"></div></div>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-title"><i class="ti ti-heart-rate-monitor"></i> Operational health score</div>
+        <div style="display:flex;align-items:center;gap:14px;margin-bottom:12px;">
+          <div class="health-box" id="healthBox" style="background:#ccc;">
+            <div class="health-num" id="healthNum">—</div>
+            <div class="health-unit">/100</div>
+          </div>
+          <div>
+            <div id="healthLabel" style="font-size:16px;font-weight:700;margin-bottom:3px;color:var(--text3);">—</div>
+            <div style="font-size:11px;color:var(--text2);line-height:1.6;">Based on overdue rate, critical exposure,<br>blind spots & location coverage.<br><strong>Target: 80 or above = Good</strong></div>
+          </div>
+        </div>
+        <div class="health-bar-wrap"><div class="health-bar" id="healthBar" style="width:0%;"></div></div>
+        <div style="margin-top:12px;">
+          <div class="stat-row"><span class="stat-lbl">Blind spots (overdue/critical, no location)</span><span class="stat-val col-red" id="sBlindSpot">—</span></div>
+          <div class="stat-row"><span class="stat-lbl">Expiring today</span><span class="stat-val col-red" id="sToday">—</span></div>
+          <div class="stat-row"><span class="stat-lbl">Expiring tomorrow</span><span class="stat-val" style="color:var(--amber);" id="sTomorrow">—</span></div>
+        </div>
+      </div>
     </div>
   </div>
 
-  <div class="row2">
-    <div class="card">
-      <div class="card-title"><i class="ti ti-chart-donut-3"></i> Container status</div>
-      <div class="stat-row"><span class="stat-lbl">Dalam Proses</span><span class="stat-val" id="sDalamProses">—</span></div>
-      <div class="stat-row"><span class="stat-lbl">Sudah Keluar</span><span class="stat-val col-green" id="sSudahKeluar">—</span></div>
-      <div class="stat-row"><span class="stat-lbl">Total containers</span><span class="stat-val" id="sTotal">—</span></div>
-      <div class="stat-row" style="margin-top:8px;border-top:2px solid var(--border);padding-top:10px;">
-        <span class="stat-lbl">Location found</span><span class="stat-val col-green" id="sLocFound">—</span>
-      </div>
-      <div class="stat-row"><span class="stat-lbl">Location missing</span><span class="stat-val col-red" id="sLocMissing">—</span></div>
-      <div class="prog-wrap">
-        <div class="prog-labels"><span>Completion rate</span><span id="sCompPct">—%</span></div>
-        <div class="prog-bg"><div class="prog-fill" id="compBar" style="background:var(--green);width:0%;"></div></div>
-      </div>
-    </div>
-    <div class="card">
-      <div class="card-title"><i class="ti ti-heart-rate-monitor"></i> Operational health score</div>
-      <div style="display:flex;align-items:center;gap:14px;margin-bottom:12px;">
-        <div class="health-box" id="healthBox" style="background:#ccc;">
-          <div class="health-num" id="healthNum">—</div>
-          <div class="health-unit">/100</div>
+  <div class="tab-content" id="tabProductivity">
+    <div class="card full">
+      <div class="card-title"><i class="ti ti-chart-histogram"></i> Daily productivity (OPS updates)</div>
+      <div style="display:flex;gap:24px;margin-bottom:14px;flex-wrap:wrap;">
+        <div>
+          <div style="font-size:28px;font-weight:700;color:var(--navy);" id="prodToday">—</div>
+          <div style="font-size:10px;letter-spacing:1px;color:var(--text3);text-transform:uppercase;">Updated today</div>
         </div>
         <div>
-          <div id="healthLabel" style="font-size:16px;font-weight:700;margin-bottom:3px;color:var(--text3);">—</div>
-          <div style="font-size:11px;color:var(--text2);line-height:1.6;">Based on overdue rate, critical exposure,<br>blind spots & location coverage.<br><strong>Target: 80 or above = Good</strong></div>
+          <div style="font-size:28px;font-weight:700;color:var(--navy);" id="prodWeek">—</div>
+          <div style="font-size:10px;letter-spacing:1px;color:var(--text3);text-transform:uppercase;">Updated last 7 days</div>
         </div>
       </div>
-      <div class="health-bar-wrap"><div class="health-bar" id="healthBar" style="width:0%;"></div></div>
-      <div style="margin-top:12px;">
-        <div class="stat-row"><span class="stat-lbl">Blind spots (overdue/critical, no location)</span><span class="stat-val col-red" id="sBlindSpot">—</span></div>
-        <div class="stat-row"><span class="stat-lbl">Expiring today</span><span class="stat-val col-red" id="sToday">—</span></div>
-        <div class="stat-row"><span class="stat-lbl">Expiring tomorrow</span><span class="stat-val" style="color:var(--amber);" id="sTomorrow">—</span></div>
+      <div class="chart-wrap" style="height:200px;"><canvas id="chartProductivity" role="img" aria-label="Daily productivity bar chart"></canvas></div>
+      <div style="font-size:11px;color:var(--text3);margin-top:8px;">Counts any OPS action (location set, photo added, or verify/unverify) on a container, based on the column X update timestamp. Reflects the current line filter above, independent of the request-date filter.</div>
+    </div>
+
+    <div class="card full">
+      <div class="card-title-row">
+        <div class="card-title" style="margin-bottom:0;"><i class="ti ti-truck-loading"></i> Daily exports (containers redelivered)</div>
+        <button class="icon-btn export-csv" onclick="exportExportsCSV()"><i class="ti ti-file-text"></i> CSV (full history)</button>
       </div>
+      <div style="display:flex;gap:24px;margin:14px 0;flex-wrap:wrap;">
+        <div>
+          <div style="font-size:28px;font-weight:700;color:var(--green);" id="exportToday">—</div>
+          <div style="font-size:10px;letter-spacing:1px;color:var(--text3);text-transform:uppercase;">Exported today</div>
+        </div>
+        <div>
+          <div style="font-size:28px;font-weight:700;color:var(--green);" id="exportWeek">—</div>
+          <div style="font-size:10px;letter-spacing:1px;color:var(--text3);text-transform:uppercase;">Exported last 7 days</div>
+        </div>
+      </div>
+      <div class="chart-wrap" style="height:200px;"><canvas id="chartExports" role="img" aria-label="Daily exports bar chart"></canvas></div>
+      <div style="font-size:11px;color:var(--text3);margin:8px 0 14px;">Status = "Sudah keluar". Exit date is recorded the first time a container is detected as exited, so tracking starts from when this feature was deployed — containers that exited earlier won't show a date (and won't appear in the chart). Respects the line filter above; independent of the request-date filter.</div>
+      <div class="tbl-wrap"><table>
+        <thead><tr><th style="text-align:left;">Container No</th><th>Line</th><th>Type</th><th>Depot</th><th>Req Date</th><th>Exited Date</th></tr></thead>
+        <tbody id="exportsRecentBody"><tr><td colspan="6" class="tbl-empty">Loading...</td></tr></tbody>
+      </table></div>
     </div>
   </div>
 
-  <div class="card full">
-    <div class="card-title"><i class="ti ti-chart-histogram"></i> Daily productivity (OPS updates)</div>
-    <div style="display:flex;gap:24px;margin-bottom:14px;flex-wrap:wrap;">
-      <div>
-        <div style="font-size:28px;font-weight:700;color:var(--navy);" id="prodToday">—</div>
-        <div style="font-size:10px;letter-spacing:1px;color:var(--text3);text-transform:uppercase;">Updated today</div>
+  <div class="tab-content" id="tabAnalytics">
+    <div class="row2">
+      <div class="card">
+        <div class="card-title"><i class="ti ti-chart-donut"></i> Risk category breakdown</div>
+        <div class="chart-legend" id="riskLegend"></div>
+        <div class="chart-wrap" style="height:220px;"><canvas id="chartRisk" role="img" aria-label="Risk category donut chart"></canvas></div>
       </div>
-      <div>
-        <div style="font-size:28px;font-weight:700;color:var(--navy);" id="prodWeek">—</div>
-        <div style="font-size:10px;letter-spacing:1px;color:var(--text3);text-transform:uppercase;">Updated last 7 days</div>
+      <div class="card">
+        <div class="card-title"><i class="ti ti-chart-bar"></i> Completion by shipping line</div>
+        <div class="chart-legend" id="lineLegend"></div>
+        <div class="chart-wrap" style="height:220px;"><canvas id="chartLine" role="img" aria-label="Completion by line bar chart"></canvas></div>
       </div>
     </div>
-    <div class="chart-wrap" style="height:200px;"><canvas id="chartProductivity" role="img" aria-label="Daily productivity bar chart"></canvas></div>
-    <div style="font-size:11px;color:var(--text3);margin-top:8px;">Counts any OPS action (location set, photo added, or verify/unverify) on a container, based on the column X update timestamp. Reflects the current line filter above, independent of the request-date filter.</div>
-  </div>
 
-  <div class="card full">
-    <div class="card-title-row">
-      <div class="card-title" style="margin-bottom:0;"><i class="ti ti-truck-loading"></i> Daily exports (containers redelivered)</div>
-      <button class="icon-btn export-csv" onclick="exportExportsCSV()"><i class="ti ti-file-text"></i> CSV (full history)</button>
-    </div>
-    <div style="display:flex;gap:24px;margin:14px 0;flex-wrap:wrap;">
-      <div>
-        <div style="font-size:28px;font-weight:700;color:var(--green);" id="exportToday">—</div>
-        <div style="font-size:10px;letter-spacing:1px;color:var(--text3);text-transform:uppercase;">Exported today</div>
+    <div class="row2">
+      <div class="card">
+        <div class="card-title"><i class="ti ti-building-warehouse"></i> Depot activity</div>
+        <div class="chart-legend">
+          <span class="legend-item"><span class="legend-dot" style="background:#378ADD;"></span>Dalam Proses</span>
+          <span class="legend-item"><span class="legend-dot" style="background:#3B6D11;"></span>Sudah Keluar</span>
+        </div>
+        <div class="chart-wrap" id="depotChartWrap" style="height:260px;"><canvas id="chartDepot" role="img" aria-label="Depot stacked bar chart"></canvas></div>
       </div>
-      <div>
-        <div style="font-size:28px;font-weight:700;color:var(--green);" id="exportWeek">—</div>
-        <div style="font-size:10px;letter-spacing:1px;color:var(--text3);text-transform:uppercase;">Exported last 7 days</div>
+      <div class="card">
+        <div class="card-title"><i class="ti ti-box"></i> Container type distribution (active)</div>
+        <div class="chart-legend">
+          <span class="legend-item"><span class="legend-dot" style="background:#3B6D11;"></span>Location found</span>
+          <span class="legend-item"><span class="legend-dot" style="background:#E24B4A;"></span>Location missing</span>
+        </div>
+        <div class="chart-wrap" id="ctypeChartWrap" style="height:260px;"><canvas id="chartCtype" role="img" aria-label="Container type bar chart"></canvas></div>
       </div>
     </div>
-    <div class="chart-wrap" style="height:200px;"><canvas id="chartExports" role="img" aria-label="Daily exports bar chart"></canvas></div>
-    <div style="font-size:11px;color:var(--text3);margin:8px 0 14px;">Status = "Sudah keluar". Exit date is recorded the first time a container is detected as exited, so tracking starts from when this feature was deployed — containers that exited earlier won't show a date (and won't appear in the chart). Respects the line filter above; independent of the request-date filter.</div>
-    <div class="tbl-wrap"><table>
-      <thead><tr><th style="text-align:left;">Container No</th><th>Line</th><th>Type</th><th>Depot</th><th>Req Date</th><th>Exited Date</th></tr></thead>
-      <tbody id="exportsRecentBody"><tr><td colspan="6" class="tbl-empty">Loading...</td></tr></tbody>
-    </table></div>
-  </div>
 
-  <div class="row2">
-    <div class="card">
-      <div class="card-title"><i class="ti ti-building-warehouse"></i> Depot activity</div>
-      <div class="chart-legend">
-        <span class="legend-item"><span class="legend-dot" style="background:#378ADD;"></span>Dalam Proses</span>
-        <span class="legend-item"><span class="legend-dot" style="background:#3B6D11;"></span>Sudah Keluar</span>
-      </div>
-      <div class="chart-wrap" id="depotChartWrap" style="height:260px;"><canvas id="chartDepot" role="img" aria-label="Depot stacked bar chart"></canvas></div>
+    <div class="card full">
+      <div class="card-title"><i class="ti ti-ship"></i> Shipping line summary</div>
+      <div class="tbl-wrap"><table>
+        <thead><tr><th>Line</th><th>Total</th><th>Dalam Proses</th><th>Sudah Keluar</th><th>Prioritas</th><th>Overdue</th><th>Critical</th><th>Warning</th><th>Monitor</th><th>Completion</th></tr></thead>
+        <tbody id="shippingLineBody"><tr><td colspan="10" class="tbl-empty">Loading...</td></tr></tbody>
+      </table></div>
     </div>
-    <div class="card">
-      <div class="card-title"><i class="ti ti-box"></i> Container type distribution (active)</div>
-      <div class="chart-legend">
-        <span class="legend-item"><span class="legend-dot" style="background:#3B6D11;"></span>Location found</span>
-        <span class="legend-item"><span class="legend-dot" style="background:#E24B4A;"></span>Location missing</span>
-      </div>
-      <div class="chart-wrap" id="ctypeChartWrap" style="height:260px;"><canvas id="chartCtype" role="img" aria-label="Container type bar chart"></canvas></div>
+
+    <div class="card full">
+      <div class="card-title"><i class="ti ti-map-pin"></i> Risk by location status</div>
+      <div class="tbl-wrap"><table>
+        <thead><tr><th>Category</th><th>Total</th><th>Location Found</th><th>Location Missing</th></tr></thead>
+        <tbody id="riskLocBody"><tr><td colspan="4" class="tbl-empty">Loading...</td></tr></tbody>
+      </table></div>
     </div>
   </div>
 
-  <div class="card full">
-    <div class="card-title"><i class="ti ti-ship"></i> Shipping line summary</div>
-    <div class="tbl-wrap"><table>
-      <thead><tr><th>Line</th><th>Total</th><th>Dalam Proses</th><th>Sudah Keluar</th><th>Prioritas</th><th>Overdue</th><th>Critical</th><th>Warning</th><th>Monitor</th><th>Completion</th></tr></thead>
-      <tbody id="shippingLineBody"><tr><td colspan="10" class="tbl-empty">Loading...</td></tr></tbody>
-    </table></div>
-  </div>
-
-  <div class="card full">
-    <div class="card-title"><i class="ti ti-map-pin"></i> Risk by location status</div>
-    <div class="tbl-wrap"><table>
-      <thead><tr><th>Category</th><th>Total</th><th>Location Found</th><th>Location Missing</th></tr></thead>
-      <tbody id="riskLocBody"><tr><td colspan="4" class="tbl-empty">Loading...</td></tr></tbody>
-    </table></div>
-  </div>
-
-  <div class="card full">
-    <div class="card-title-row">
-      <div class="card-title" style="margin-bottom:0;"><i class="ti ti-table"></i> Container detail</div>
-      <div style="display:flex;gap:6px;">
-        <button class="icon-btn export-xl"  onclick="exportDetailExcel()"><i class="ti ti-file-spreadsheet"></i> Export view</button>
-        <button class="icon-btn export-csv" onclick="exportDetailCSV()"><i class="ti ti-file-text"></i> CSV</button>
+  <div class="tab-content" id="tabDetail">
+    <div class="card full">
+      <div class="card-title-row">
+        <div class="card-title" style="margin-bottom:0;"><i class="ti ti-table"></i> Container detail</div>
+        <div style="display:flex;gap:6px;">
+          <button class="icon-btn export-xl"  onclick="exportDetailExcel()"><i class="ti ti-file-spreadsheet"></i> Export view</button>
+          <button class="icon-btn export-csv" onclick="exportDetailCSV()"><i class="ti ti-file-text"></i> CSV</button>
+        </div>
       </div>
-    </div>
-    <div class="detail-controls">
-      <div class="risk-filter-btns">
-        <button class="rfbtn active"      id="rfAll"      onclick="setDetailFilter('all')">All active</button>
-        <button class="rfbtn rf-prioritas" id="rfPrioritas" onclick="setDetailFilter('prioritas')">Prioritas</button>
-        <button class="rfbtn rf-overdue"  id="rfOverdue"  onclick="setDetailFilter('overdue')">Overdue</button>
-        <button class="rfbtn rf-critical" id="rfCritical" onclick="setDetailFilter('critical')">Critical</button>
-        <button class="rfbtn rf-warning"  id="rfWarning"  onclick="setDetailFilter('warning')">Warning</button>
-        <button class="rfbtn rf-monitor"  id="rfMonitor"  onclick="setDetailFilter('monitor')">Monitor</button>
-        <span class="rf-divider"></span>
-        <button class="rfbtn rf-verified"   id="rfVerified"   onclick="setVerifyFilter('verified')"><i class="ti ti-circle-check"></i> Verified</button>
-        <button class="rfbtn rf-unverified" id="rfUnverified" onclick="setVerifyFilter('unverified')">Not verified</button>
+      <div class="detail-controls">
+        <div class="risk-filter-btns">
+          <button class="rfbtn active"      id="rfAll"      onclick="setDetailFilter('all')">All active</button>
+          <button class="rfbtn rf-prioritas" id="rfPrioritas" onclick="setDetailFilter('prioritas')">Prioritas</button>
+          <button class="rfbtn rf-overdue"  id="rfOverdue"  onclick="setDetailFilter('overdue')">Overdue</button>
+          <button class="rfbtn rf-critical" id="rfCritical" onclick="setDetailFilter('critical')">Critical</button>
+          <button class="rfbtn rf-warning"  id="rfWarning"  onclick="setDetailFilter('warning')">Warning</button>
+          <button class="rfbtn rf-monitor"  id="rfMonitor"  onclick="setDetailFilter('monitor')">Monitor</button>
+          <span class="rf-divider"></span>
+          <button class="rfbtn rf-verified"   id="rfVerified"   onclick="setVerifyFilter('verified')"><i class="ti ti-circle-check"></i> Verified</button>
+          <button class="rfbtn rf-unverified" id="rfUnverified" onclick="setVerifyFilter('unverified')">Not verified</button>
+        </div>
+        <input type="text" id="detailSearch" placeholder="Search container no, depot, location..." oninput="renderDetailTable()">
+        <span class="detail-count" id="detailCount"></span>
       </div>
-      <input type="text" id="detailSearch" placeholder="Search container no, depot, location..." oninput="renderDetailTable()">
-      <span class="detail-count" id="detailCount"></span>
+      <div class="tbl-wrap"><table>
+        <thead><tr>
+          <th style="text-align:left;">Container No</th>
+          <th>Line</th><th>Type</th><th>Depot</th><th>Req Date</th><th>Days Left</th><th>Risk</th><th>Location</th><th>Actual Loc (OPS)</th><th>Photo</th><th>Status by OPS</th><th>Last Updated</th>
+        </tr></thead>
+        <tbody id="detailBody"><tr><td colspan="12" class="tbl-empty">Loading...</td></tr></tbody>
+      </table></div>
     </div>
-    <div class="tbl-wrap"><table>
-      <thead><tr>
-        <th style="text-align:left;">Container No</th>
-        <th>Line</th><th>Type</th><th>Depot</th><th>Req Date</th><th>Days Left</th><th>Risk</th><th>Location</th><th>Actual Loc (OPS)</th><th>Photo</th><th>Status by OPS</th><th>Last Updated</th>
-      </tr></thead>
-      <tbody id="detailBody"><tr><td colspan="12" class="tbl-empty">Loading...</td></tr></tbody>
-    </table></div>
   </div>
 
   <footer>
@@ -819,7 +842,7 @@ const MONTHS   = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','N
 const state = {
   MSL:[], GSL:[], filter:'ALL',
   detailFilter:'all', opFilter:'all', verifyFilter:'all', opLine:'ALL',
-  dateMode:'all', dateFrom:null, dateTo:null
+  dateMode:'all', dateFrom:null, dateTo:null, activeTab:'overview'
 };
 
 function fmtNow() {
@@ -1638,6 +1661,28 @@ function compressImage(file){
 const charts={};
 function destroyChart(id){if(charts[id]){charts[id].destroy();delete charts[id];}}
 
+// ── TABS (back office) ────────────────────────────────
+// Chart.js measures the canvas's rendered size at creation time. A chart
+// built while its tab is display:none gets a zero-height canvas and looks
+// broken. Charts are still destroyed+recreated on every render() regardless
+// of which tab is active (simplest, avoids stale-data bugs) — the fix here
+// is purely cosmetic: whenever a tab BECOMES visible, explicitly call
+// .resize() on the charts that live in it so they pick up their now-correct
+// container dimensions.
+const TAB_IDS=['overview','productivity','analytics','detail'];
+const TAB_CHART_KEYS={productivity:['productivity','exports'],analytics:['risk','line','depot','ctype']};
+function switchTab(tab){
+  state.activeTab=tab;
+  TAB_IDS.forEach(t=>{
+    const panel=document.getElementById('tab'+t.charAt(0).toUpperCase()+t.slice(1));
+    if(panel)panel.classList.toggle('active',t===tab);
+    const btn=document.getElementById('tabBtn'+t.charAt(0).toUpperCase()+t.slice(1));
+    if(btn)btn.classList.toggle('active',t===tab);
+  });
+  const keys=TAB_CHART_KEYS[tab];
+  if(keys)keys.forEach(k=>{if(charts[k])charts[k].resize();});
+}
+
 function renderCharts(s){
   destroyChart('risk');
   const riskData=[s.prioritas,s.overdue,s.critical,s.warning,s.monitor],riskTotal=riskData.reduce((a,b)=>a+b,0);
@@ -1672,6 +1717,7 @@ function setDetailFilter(f){
   ['kpiPrioritas','kpiOverdue','kpiCritical','kpiWarning','kpiMonitor'].forEach(id=>{const el=document.getElementById(id);if(el)el.classList.remove('active');});
   const km={prioritas:'kpiPrioritas',overdue:'kpiOverdue',critical:'kpiCritical',warning:'kpiWarning',monitor:'kpiMonitor'};
   if(km[f])document.getElementById(km[f]).classList.add('active');
+  switchTab('detail');
   renderDetailTable();
   const db=document.getElementById('detailBody');if(db)db.closest('.card').scrollIntoView({behavior:'smooth',block:'start'});
 }
