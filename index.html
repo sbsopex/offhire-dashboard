@@ -654,6 +654,29 @@ footer { text-align:center; font-size:11px; color:var(--text3); padding-top:20px
     <div style="font-size:11px;color:var(--text3);margin-top:8px;">Counts any OPS action (location set, photo added, or verify/unverify) on a container, based on the column X update timestamp. Reflects the current line filter above, independent of the request-date filter.</div>
   </div>
 
+  <div class="card full">
+    <div class="card-title-row">
+      <div class="card-title" style="margin-bottom:0;"><i class="ti ti-truck-loading"></i> Daily exports (containers redelivered)</div>
+      <button class="icon-btn export-csv" onclick="exportExportsCSV()"><i class="ti ti-file-text"></i> CSV (full history)</button>
+    </div>
+    <div style="display:flex;gap:24px;margin:14px 0;flex-wrap:wrap;">
+      <div>
+        <div style="font-size:28px;font-weight:700;color:var(--green);" id="exportToday">—</div>
+        <div style="font-size:10px;letter-spacing:1px;color:var(--text3);text-transform:uppercase;">Exported today</div>
+      </div>
+      <div>
+        <div style="font-size:28px;font-weight:700;color:var(--green);" id="exportWeek">—</div>
+        <div style="font-size:10px;letter-spacing:1px;color:var(--text3);text-transform:uppercase;">Exported last 7 days</div>
+      </div>
+    </div>
+    <div class="chart-wrap" style="height:200px;"><canvas id="chartExports" role="img" aria-label="Daily exports bar chart"></canvas></div>
+    <div style="font-size:11px;color:var(--text3);margin:8px 0 14px;">Status = "Sudah keluar". Exit date is recorded the first time a container is detected as exited, so tracking starts from when this feature was deployed — containers that exited earlier won't show a date (and won't appear in the chart). Respects the line filter above; independent of the request-date filter.</div>
+    <div class="tbl-wrap"><table>
+      <thead><tr><th style="text-align:left;">Container No</th><th>Line</th><th>Type</th><th>Depot</th><th>Req Date</th><th>Exited Date</th></tr></thead>
+      <tbody id="exportsRecentBody"><tr><td colspan="6" class="tbl-empty">Loading...</td></tr></tbody>
+    </table></div>
+  </div>
+
   <div class="row2">
     <div class="card">
       <div class="card-title"><i class="ti ti-building-warehouse"></i> Depot activity</div>
@@ -1035,6 +1058,80 @@ function renderProductivityCard(){
       options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false},tooltip:{callbacks:{label:ctx=>' '+ctx.raw+' container'+(ctx.raw!==1?'s':'')+' updated'}}},scales:{y:{beginAtZero:true,ticks:{precision:0,font:{size:11}},grid:{color:'#e8edf3'}},x:{ticks:{font:{size:11}},grid:{display:false}}}}
     });
   }
+}
+
+// ── EXPORT STATS (column Y — "Exited date") ───────────────────────────
+// Counts containers detected as "Sudah keluar" per calendar day, based on
+// column Y. Like the productivity stats above, this is intentionally NOT
+// filtered by the request-date filter (different timeline) but DOES respect
+// the line filter (state.filter / getLines()). Unlike computeStats(), this
+// must scan completed rows too (computeStats's main loops skip them), so it
+// walks state[ln] directly rather than reusing computeStats's output.
+function computeExportStats(){
+  const lines=getLines();
+  const dayCounts={};
+  let exportedToday=0,exportedWeek=0;
+  const today=new Date();today.setHours(0,0,0,0);
+  const sevenDaysAgo=new Date(today);sevenDaysAgo.setDate(sevenDaysAgo.getDate()-6);
+  const recent=[];
+  for(const ln of lines){
+    for(const row of(state[ln]||[])){
+      const containerNo=String(row[2]||'').trim();
+      if(!containerNo)continue;
+      const status=String(row[14]||'').trim();
+      if(status!=='Sudah keluar')continue;
+      const exited=parseReqDate(String(row[24]||'')); // column Y, date-only
+      if(!exited)continue; // exited before this column existed — unknown date, not counted
+      const d=new Date(exited);d.setHours(0,0,0,0);
+      const key=d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');
+      dayCounts[key]=(dayCounts[key]||0)+1;
+      if(d.getTime()===today.getTime())exportedToday++;
+      if(d>=sevenDaysAgo&&d<=today)exportedWeek++;
+      recent.push({ln,containerNo,depot:String(row[9]||'').trim()||'—',ctype:String(row[18]||'').trim()||'—',reqDate:String(row[11]||'')||'—',exited:d});
+    }
+  }
+  recent.sort((a,b)=>b.exited-a.exited);
+  const trendLabels=[],trendValues=[];
+  for(let i=6;i>=0;i--){
+    const d=new Date(today);d.setDate(d.getDate()-i);
+    const key=d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');
+    trendLabels.push(d.getDate()+' '+MONTHS[d.getMonth()]);
+    trendValues.push(dayCounts[key]||0);
+  }
+  return{exportedToday,exportedWeek,trendLabels,trendValues,recent};
+}
+
+let exportRecentFull=[]; // cached for CSV export
+
+function renderExportsCard(){
+  const loaded=hasAnyData();
+  const ex=loaded?computeExportStats():{exportedToday:0,exportedWeek:0,trendLabels:[],trendValues:[],recent:[]};
+  const setEl=(id,val)=>{const el=document.getElementById(id);if(el)el.textContent=val;};
+  setEl('exportToday',loaded?ex.exportedToday:'—');
+  setEl('exportWeek',loaded?ex.exportedWeek:'—');
+  exportRecentFull=ex.recent;
+  destroyChart('exports');
+  const canvas=document.getElementById('chartExports');
+  if(loaded&&canvas){
+    charts.exports=new Chart(canvas,{
+      type:'bar',
+      data:{labels:ex.trendLabels,datasets:[{label:'Containers exported',data:ex.trendValues,backgroundColor:'#3B6D11',borderRadius:4}]},
+      options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false},tooltip:{callbacks:{label:ctx=>' '+ctx.raw+' container'+(ctx.raw!==1?'s':'')+' exported'}}},scales:{y:{beginAtZero:true,ticks:{precision:0,font:{size:11}},grid:{color:'#e8edf3'}},x:{ticks:{font:{size:11}},grid:{display:false}}}}
+    });
+  }
+  const tbody=document.getElementById('exportsRecentBody');
+  if(tbody){
+    const top=ex.recent.slice(0,15);
+    tbody.innerHTML=top.length
+      ? top.map(r=>`<tr><td style="font-family:monospace;font-size:12px;text-align:left;">${r.containerNo}</td><td>${r.ln}</td><td>${r.ctype}</td><td>${r.depot}</td><td style="color:var(--text3);">${r.reqDate}</td><td style="color:var(--green);font-weight:600;">${r.exited.getDate()+' '+MONTHS[r.exited.getMonth()]+' '+r.exited.getFullYear()}</td></tr>`).join('')
+      : '<tr><td colspan="6" class="tbl-empty">No exported containers recorded yet — tracking starts from when this feature was deployed.</td></tr>';
+  }
+}
+
+function exportExportsCSV(){
+  const data=[['Container No','Line','Type','Depot','Req Date','Exited Date'],
+    ...exportRecentFull.map(r=>[r.containerNo,r.ln,r.ctype,r.depot,r.reqDate,r.exited.getDate()+' '+MONTHS[r.exited.getMonth()]+' '+r.exited.getFullYear()])];
+  downloadFile(toCSV(data),'SBS_Offhire_Exported_'+dateStr()+'.csv','text/csv');
 }
 
 // ── OPERATOR VIEW ─────────────────────────────────────
@@ -1697,6 +1794,7 @@ function render(){
 
     renderCharts(s);
     renderProductivityCard();
+    renderExportsCard();
     renderDetailTable();
   }
 }
